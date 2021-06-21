@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/assessment_methods/db" VERSION="2021061400" COMMENT="XMLDB file for Moodle local/assessment_methods"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+    <TABLES>
+        <TABLE NAME="assessment_methods" COMMENT="Saves formats for each module">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="cmid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="method" SEQUENCE="false" TYPE="text" NOTNULL="true"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="cmid" TYPE="foreign" FIELDS="id" REFTABLE="course_modules" REFFIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="cm_unique" UNIQUE="true" FIELDS="cmid"/>
+            </INDEXES>
+        </TABLE>
+    </TABLES>
+</XMLDB>
