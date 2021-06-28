@@ -43,3 +43,9 @@ EOL
 
 /** @var admin_category $ADMIN */
 $ADMIN->add('localplugins', $temp);
+$ADMIN->add('reports', new admin_externalpage(
+    'assessmentmethodsreport',
+    get_string('pluginname', 'local_assessment_methods'),
+    $CFG->wwwroot . '/local/assessment_methods/report.php',
+    'local/assessment_methods:view_report'
+));

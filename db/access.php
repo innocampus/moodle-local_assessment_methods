@@ -1,5 +1,5 @@
 <?php
-// This file is part of the ISIS-PlugIn "Assessment Methods" - http://moodle.org/
+// This file is part of the ISIS-PlugIn "Antragsverwaltung" - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -28,6 +28,14 @@ $capabilities = [
     'local/assessment_methods:manage' => [
         'riskbitmask' => RISK_XSS,
         'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => [
+            'manager' => CAP_ALLOW,
+        ],
+    ],
+
+    'local/assessment_methods:view_report' => [
+        'captype' => 'read',
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => [
             'manager' => CAP_ALLOW,
