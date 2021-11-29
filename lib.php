@@ -87,7 +87,7 @@ function get_method_options($module) {
  */
 function local_assessment_methods_coursemodule_edit_post_actions($data, $course) {
     global $DB;
-    var_dump($data);
+
     if ($record = $DB->get_record('assessment_methods', ['cmid' => $data->coursemodule])) {
         $record->method = $data->assessment_method;
         $DB->update_record('assessment_methods', $record);
