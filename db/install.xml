@@ -6,8 +6,9 @@
     <TABLES>
         <TABLE NAME="assessment_methods" COMMENT="Saves formats for each module">
             <FIELDS>
-                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-                <FIELD NAME="cmid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="id" TYPE="int" UNSIGNED="true" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="cmid" TYPE="int" UNSIGNED="true" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="userid" TYPE="int" UNSIGNED="true" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
                 <FIELD NAME="method" SEQUENCE="false" TYPE="text" NOTNULL="true"/>
             </FIELDS>
             <KEYS>
