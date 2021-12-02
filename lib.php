@@ -25,7 +25,7 @@ function local_assessment_methods_coursemodule_standard_elements($formwrapper, $
             }
             $mform->addRule('assessment_method', get_string('required'), 'required');
             $mform->addHelpButton('assessment_method', 'assessment_method', 'local_assessment_methods');
-            if ($record = $DB->get_record('assessment_methods', ['cmid' => $wrapper->coursemodule])) {
+            if (!empty($wrapper->coursemodule) && $record = $DB->get_record('assessment_methods', ['cmid' => $wrapper->coursemodule])) {
                 $method_choice->setSelected($record->method);
             }
         }
