@@ -25,36 +25,60 @@
 namespace local_assessment_methods\output;
 
 use moodle_page;
-use context_system;
 
 defined('MOODLE_INTERNAL') || die();
 
-class renderer extends \renderer_base {
+/**
+ * Class renderer
+ * @package local_assessment_methods\output
+ * @property-read \stdClass $data
+ */
+class report implements \renderable {
 
-    /**
-     * @return mixed
-     * @throws \coding_exception
-     * @throws \moodle_exception
-     */
-    public function method_link() {
-        $link = \html_writer::link(\local_assessment_methods\helper::get_method_add_url(),
-            get_string('createmethodbuttontext', 'local_assessment_methods'),
-            ['class' => 'btn btn-secondary mb-3']);
+    /** @var array $data */
+    private $data;
 
-        return $link;
+    function __construct(array $data) {
+        $this->data = $data;
     }
 
     /**
-     * @param setting_table $table
-     * @return string
-     * @throws \moodle_exception
+     * @param $data
+     * @return \html_table
      */
-    public function render_setting_table(setting_table $table) {
-        return \html_writer::table($table->create());
+    public function table() {
+        $table = new \html_table();
+        $table->head = $this->create_table_header();
+        $table->data = [];
+        foreach (array_keys($this->data) as $row_id) {
+            $table->data[] = $this->create_table_row($row_id);
+        }
+        return $table;
     }
 
-    public function render_report(report $report) {
-        return \html_writer::table($report->table());
+    private function create_table_header() {
+        $head = [];
+        return $head;
+    }
+
+    private function create_table_row($row_id) {
+        $row = new \html_table_row();
+        return $row;
+    }
+
+    static function filter_form() {
+        $form = new \QuickformForm();
+        return $form;
+    }
+
+    static function quiz_svg() {
+        $svg = "";
+        return $svg;
+    }
+
+    static function assign_svg() {
+        $svg = "";
+        return $svg;
     }
 
 }
