@@ -24,37 +24,51 @@
 
 namespace local_assessment_methods\output;
 
-use moodle_page;
-use context_system;
+use coding_exception;
+use html_writer;
+use moodle_exception;
 
 defined('MOODLE_INTERNAL') || die();
 
 class renderer extends \renderer_base {
 
     /**
-     * @return mixed
-     * @throws \coding_exception
-     * @throws \moodle_exception
+     * @return string
+     * @throws coding_exception
+     * @throws moodle_exception
      */
-    public function method_link() {
-        $link = \html_writer::link(\local_assessment_methods\helper::get_method_add_url(),
-            get_string('createmethodbuttontext', 'local_assessment_methods'),
+    public function method_link(): string {
+        return html_writer::link(\local_assessment_methods\helper::get_method_add_url(),
+            get_string('create_method_button_text', 'local_assessment_methods'),
             ['class' => 'btn btn-secondary mb-3']);
+    }
 
-        return $link;
+    /**
+     * @return string
+     * @throws coding_exception
+     */
+    public function no_methods_box(): string
+    {
+        return html_writer::div(
+            get_string('setting_table_empty_notice', 'local_assessment_methods'),
+            'alert alert-info alert-block'
+        );
     }
 
     /**
      * @param setting_table $table
      * @return string
-     * @throws \moodle_exception
+     * @throws moodle_exception
      */
-    public function render_setting_table(setting_table $table) {
-        return \html_writer::table($table->create());
+    public function render_setting_table(setting_table $table): string {
+        return html_writer::table($table->create());
     }
 
-    public function render_report(report $report) {
-        return \html_writer::table($report->table());
+    /**
+     * @param report $report
+     * @return string
+     */
+    public function render_report(report $report): string {
+        return html_writer::table($report->table());
     }
-
 }

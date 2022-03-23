@@ -2,28 +2,17 @@
 
 //TODO: Make usable activities selectable
 
-$temp = new admin_settingpage(
+/** @var admin_category $ADMIN */
+$ADMIN->add('localplugins', new admin_externalpage(
     'assessmentmethods',
     get_string('pluginname', 'local_assessment_methods'),
+    \local_assessment_methods\helper::get_admin_setting_url(),
     'local/assessment_methods:manage'
-);
-
-try {
-    $temp->add(new admin_setting_local_assessment_methods(
-        get_string()
-    ));
-} catch (moodle_exception $e) {
-    $temp = null;
-}
-
-if ($temp) {
-    /** @var admin_category $ADMIN */
-    $ADMIN->add('localplugins', $temp);
-}
+));
 
 $ADMIN->add('reports', new admin_externalpage(
     'assessmentmethodsreport',
     get_string('pluginname', 'local_assessment_methods'),
-    $CFG->wwwroot . '/local/assessment_methods/report.php',
+    \local_assessment_methods\helper::get_report_url(),
     'local/assessment_methods:view_report'
 ));

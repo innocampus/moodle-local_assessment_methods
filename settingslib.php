@@ -57,19 +57,6 @@ class admin_setting_local_assessment_methods extends admin_setting {
      */
     public function output_html($data, $query = '')
     {
-        global $PAGE, $USER;
 
-        /** @var local_assessment_methods\output\renderer $renderer */
-        $renderer = $PAGE->get_renderer('local_assessment_methods');
-        $output = $renderer->method_link();
-
-        try {
-            $perm = has_capability('local_assessment_methods/manage', context_system::instance());
-        } catch (dml_exception | coding_exception $_) {
-            $perm = false;
-        }
-        $output .= $renderer->render(new setting_table(json_decode($data), $USER->lang, $perm, $perm));
-
-        return $output;
     }
 }

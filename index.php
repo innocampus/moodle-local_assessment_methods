@@ -1,4 +1,4 @@
-<?php
+ <?php
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -22,25 +22,14 @@
  * @copyright  2022 Technische Universität Berlin
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-defined('MOODLE_INTERNAL') || die();
+use local_assessment_methods\helper;
+use local_assessment_methods\manager;
 
 require_once('../../config.php');
-
 require_admin();
-
-$returnurl = \local_assessment_methods\helper::get_admin_settings_url();
 
 $action = optional_param('action', '', PARAM_ALPHANUMEXT);
 $license = optional_param('method', '', PARAM_ALPHA);
 
-if (!confirm_sesskey()) {
-    redirect($returnurl);
-}
-
 // Route via the manager.
-$manager = new \local_assessment_methods\manager();
-$PAGE->set_context(context_system::instance());
-$PAGE->set_url(\local_assessment_methods\helper::get_index_url());
-
-$manager->execute($action, $method);
+manager::execute($action);

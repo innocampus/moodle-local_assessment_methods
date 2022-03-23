@@ -4,6 +4,13 @@ $string['pluginname'] = 'Assessment Methods';
 
 $string['assessment_method'] = 'Assessment Method';
 $string['assessment_method_help'] = '';
+$string['create_method_button_text'] = 'Add new assessment method';
+$string['setting_table_empty_notice'] = 'There are no assessment methods yet.';
+$string['edit_or_create_method'] = 'Edit or create an assessment method';
+$string['edit_method'] = 'Edit an assessment method';
+$string['create_method'] = 'Create an assessment method';
+
+$string['report'] = 'Report';
 
 $string['lang_filter'] = 'Language Filter';
 $string['lang_filter_desc'] = 'Separated list of language codes and the word \'key\' with delimiter \'|\'. The text provided by \'key\' is used to store the respective entry in the database. The Position of the lang code here represents the position of the translation in other settings.';
