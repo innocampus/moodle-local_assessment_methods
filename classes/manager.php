@@ -32,6 +32,9 @@ use context_system;
 use moodle_url;
 
 defined('MOODLE_INTERNAL') || die();
+global $CFG;
+
+require_once($CFG->libdir . '/formslib.php');
 
 class manager {
 
@@ -153,7 +156,7 @@ class manager {
     private static function show_form($method) {
         global $OUTPUT;
 
-        $form = new output\method_form('method_form', 'POST', helper::get_method_edit_url($method));
+        $form = helper::get_method_form();
         $form->display();
         echo $OUTPUT->footer();
     }
@@ -183,6 +186,11 @@ class manager {
 
         /** @var output\renderer $renderer */
         $renderer = $PAGE->get_renderer('local_assessment_methods');
+
+        $data = [];
+        //TODO fill $data
+
+        $renderer->render(new output\report($data));
         echo $OUTPUT->footer();
     }
 
@@ -190,9 +198,11 @@ class manager {
      * @throws moodle_exception
      */
     private static function process_form() {
-        $form = new output\method_form('method_form', 'POST', helper::get_form_action_url());
-        if ($data = $form->get_data()) {
-            $method = $data['method'];
+        $form = helper::get_method_form();
+        if ($form->is_cancelled()) {
+            redirect(helper::get_admin_setting_url());
+        } else if ($form->is_submitted() && $form->is_validated()) {
+            $data = $form->get_data();
             $setting = [];
             $lang_codes = array_keys(get_string_manager()->get_list_of_languages());
             foreach ($lang_codes as $lc) {
@@ -202,7 +212,7 @@ class manager {
                 }
             }
             if (!empty($setting)) {
-                helper::add_setting($method, $setting);
+                helper::add_setting($data->method, $setting);
             }
         }
     }

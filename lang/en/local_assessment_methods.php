@@ -9,6 +9,8 @@ $string['setting_table_empty_notice'] = 'There are no assessment methods yet.';
 $string['edit_or_create_method'] = 'Edit or create an assessment method';
 $string['edit_method'] = 'Edit an assessment method';
 $string['create_method'] = 'Create an assessment method';
+$string['translations'] = 'Translations';
+$string['method_id'] = 'Identifier';
 
 $string['report'] = 'Report';
 

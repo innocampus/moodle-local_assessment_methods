@@ -26,6 +26,7 @@ use local_assessment_methods\helper;
 use local_assessment_methods\manager;
 
 require_once('../../config.php');
+require_once($CFG->libdir . '/formslib.php');
 require_admin();
 
 $action = optional_param('action', '', PARAM_ALPHANUMEXT);

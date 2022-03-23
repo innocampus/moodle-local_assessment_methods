@@ -24,6 +24,7 @@
 
 namespace local_assessment_methods\output;
 
+use html_table;
 use moodle_page;
 
 defined('MOODLE_INTERNAL') || die();
@@ -34,20 +35,20 @@ defined('MOODLE_INTERNAL') || die();
  * @property-read \stdClass $data
  */
 class report implements \renderable {
+    //TODO make this work!
 
     /** @var array $data */
-    private $data;
+    private array $data;
 
     function __construct(array $data) {
         $this->data = $data;
     }
 
     /**
-     * @param $data
-     * @return \html_table
+     * @return html_table
      */
-    public function table() {
-        $table = new \html_table();
+    public function table(): html_table {
+        $table = new html_table();
         $table->head = $this->create_table_header();
         $table->data = [];
         foreach (array_keys($this->data) as $row_id) {
@@ -56,29 +57,24 @@ class report implements \renderable {
         return $table;
     }
 
-    private function create_table_header() {
-        $head = [];
-        return $head;
+    private function create_table_header(): array {
+        return [];
     }
 
-    private function create_table_row($row_id) {
-        $row = new \html_table_row();
-        return $row;
+    private function create_table_row($row_id): ?\html_table_row {
+        return null;
     }
 
-    static function filter_form() {
-        $form = new \QuickformForm();
-        return $form;
+    static function filter_form(): ?\moodleform {
+        return null;
     }
 
-    static function quiz_svg() {
-        $svg = "";
-        return $svg;
+    static function quiz_svg(): string {
+        return '';
     }
 
-    static function assign_svg() {
-        $svg = "";
-        return $svg;
+    static function assign_svg(): string {
+        return '';
     }
 
 }

@@ -10,6 +10,8 @@ $string['edit_or_create_method'] = 'Eine Prüfungsart bearbeiten oder erstellen'
 $string['edit_method'] = 'Eine Prüfungsart bearbeiten';
 $string['create_method'] = 'Eine Prüfungsart erstellen';
 $string['report'] = 'Bericht';
+$string['translations'] = 'Übersetzungen';
+$string['method_id'] = 'Kennung';
 
 $string['lang_filter'] = 'Sprachfilter';
 $string['lang_filter_desc'] = 'Eine mit "|" seperierte Liste von Sprachcodes und zusätzlich dem Schlüsselwort "key". Der "Key" wird verwendet, um einen entsprechenden Eintrag in der Datenbank zu erzeugen. Die Position im Filter muss der Übersetzung ber den anderen Einstellungen entsprechen.';

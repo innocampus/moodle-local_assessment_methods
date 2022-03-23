@@ -106,6 +106,13 @@ class helper {
         return new moodle_url(self::PLUGIN_PATH . 'index.php', $params);
     }
 
+    public static function get_method_form(): output\method_form {
+        return new output\method_form(
+            self::get_form_action_url(),
+            ['id' => 'method_form', 'name' => 'method_form', 'method' => 'POST', 'accept-charset' => 'UTF-8']
+        );
+    }
+
     /**
      * @param $identifier
      * @return string

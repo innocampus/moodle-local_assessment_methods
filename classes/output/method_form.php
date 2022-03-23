@@ -26,8 +26,12 @@ namespace local_assessment_methods\output;
 
 use HTML_QuickForm_text;
 use local_assessment_methods\helper;
+use local_assessment_methods\manager;
 
 defined('MOODLE_INTERNAL') || die();
+global $CFG;
+
+require_once($CFG->libdir . '/formslib.php');
 
 class method_form extends \moodleform {
 
@@ -35,24 +39,35 @@ class method_form extends \moodleform {
         /** @var HTML_QuickForm_text $method_elem */
         $setting = False;
         $method = $this->optional_param('method',null, PARAM_NOTAGS);
+        $mform = $this->_form;
+
+        // General settings
+        $mform->addElement('header', 'generalheader',get_string('general'));
+        $mform->addElement('hidden', 'action', manager::ACTION_EXECUTE_FORM)->setType(PARAM_ALPHA);
+        /** @var HTML_QuickForm_text $elem */
+        $elem = $mform->addElement('text', 'method_id', helper::get_string('method_id'));
+        $elem->setType(PARAM_ALPHA);
+        $mform->addRule('method_id', get_string('required'),'required');
         if ($method) {
-            $setting = helper::get_setting();
+            $elem->setValue($method);
+            $elem->setAttributes(['disabled' => 'disabled']);
+            $setting = helper::get_setting();  // used later
         }
 
-        $this->_form->addElement('text', 'method_id', $method);
-        $group = [];
+        // Translations
+        $mform->addElement('header', 'settingsheader', helper::get_string('translations'));
         $lang_strings = get_string_manager()->get_list_of_translations();
         foreach ($lang_strings as $lang_code => $localized_string) {
             /** @var HTML_QuickForm_text $elem */
-            $elem = $this->_form->createElement('text', self::get_translation_element_name($lang_code), $localized_string);
+            $elem = $mform->addElement('text', self::get_translation_element_name($lang_code), $localized_string);
             $elem->setType(PARAM_NOTAGS);
             if ($setting && isset($setting[$method])) {
                 $elem->setValue($setting[$method][$lang_code]);
             }
-            $group[] = $elem;
         }
-        $this->_form->addGroup($group);
-        $this->_form->addElement('submit', 'Submit');   //TODO translate
+        $mform->setExpanded('generalheader');
+        $mform->setExpanded('settingsheader');
+        $this->add_action_buttons();
     }
 
     public function definition_after_data()
