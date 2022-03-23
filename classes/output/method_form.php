@@ -29,7 +29,7 @@ use local_assessment_methods\helper;
 
 defined('MOODLE_INTERNAL') || die();
 
-class method_form extends \MoodleQuickForm {
+class method_form extends \moodleform {
 
     public function definition() {
         /** @var HTML_QuickForm_text $method_elem */
@@ -39,20 +39,30 @@ class method_form extends \MoodleQuickForm {
             $setting = helper::get_setting();
         }
 
-        $this->addElement('text', 'method_id', $method);
+        $this->_form->addElement('text', 'method_id', $method);
         $group = [];
         $lang_strings = get_string_manager()->get_list_of_translations();
         foreach ($lang_strings as $lang_code => $localized_string) {
             /** @var HTML_QuickForm_text $elem */
-            $elem = $this->createElement('text', self::get_translation_element_name($lang_code), $localized_string);
+            $elem = $this->_form->createElement('text', self::get_translation_element_name($lang_code), $localized_string);
             $elem->setType(PARAM_NOTAGS);
             if ($setting && isset($setting[$method])) {
                 $elem->setValue($setting[$method][$lang_code]);
             }
             $group[] = $elem;
         }
-        $this->addGroup($group);
-        $this->addElement('submit', 'Submit');   //TODO translate
+        $this->_form->addGroup($group);
+        $this->_form->addElement('submit', 'Submit');   //TODO translate
+    }
+
+    public function definition_after_data()
+    {
+        parent::definition_after_data();
+        /** @var HTML_QuickForm_text $method_element */
+        $method_element = $this->_form->getElement('method_id');
+        if (!empty($method_element->getValue())) {
+            $method_element->setAttributes(['disabled' => 'disabled']);
+        }
     }
 
     public static function get_translation_element_name(string $lang_code) : string {
