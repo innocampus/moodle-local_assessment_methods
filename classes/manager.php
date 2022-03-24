@@ -27,6 +27,7 @@ namespace local_assessment_methods;
 use coding_exception;
 use core\update\checker_exception;
 use dml_exception;
+use local_assessment_methods\output\method_form;
 use moodle_exception;
 use context_system;
 use moodle_url;
@@ -35,6 +36,7 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 
 require_once($CFG->libdir . '/formslib.php');
+require_once($CFG->libdir . '/adminlib.php');
 
 class manager {
 
@@ -89,8 +91,8 @@ class manager {
         $url = new moodle_url(helper::PLUGIN_PATH . 'index.php', ['action' => $for_action]);
         $context = context_system::instance();
 
+        $PAGE->set_pagelayout("admin");
         $PAGE->set_context($context);
-        $PAGE->set_pagelayout("standard");
         $PAGE->navbar->add(
             get_string('administrationsite'),
             new moodle_url('/admin/search.php')
@@ -141,6 +143,7 @@ class manager {
 
         $PAGE->navbar->add($title);
         $PAGE->set_title($title);
+        $PAGE->set_heading($title);
         $PAGE->set_url($url);
 
         require_login(SITEID, false);
@@ -150,13 +153,12 @@ class manager {
     }
 
     /**
-     * @param $method
      * @throws moodle_exception
      */
-    private static function show_form($method) {
+    private static function show_form() {
         global $OUTPUT;
 
-        $form = helper::get_method_form();
+        $form = new method_form();
         $form->display();
         echo $OUTPUT->footer();
     }
@@ -198,7 +200,7 @@ class manager {
      * @throws moodle_exception
      */
     private static function process_form() {
-        $form = helper::get_method_form();
+        $form = new method_form();
         if ($form->is_cancelled()) {
             redirect(helper::get_admin_setting_url());
         } else if ($form->is_submitted() && $form->is_validated()) {

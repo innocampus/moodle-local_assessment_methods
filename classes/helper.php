@@ -98,22 +98,6 @@ class helper {
     }
 
     /**
-     * @return moodle_url
-     * @throws moodle_exception
-     */
-    public static function get_form_action_url(): moodle_url {
-        $params = ['action' => manager::ACTION_EXECUTE_FORM];
-        return new moodle_url(self::PLUGIN_PATH . 'index.php', $params);
-    }
-
-    public static function get_method_form(): output\method_form {
-        return new output\method_form(
-            self::get_form_action_url(),
-            ['id' => 'method_form', 'name' => 'method_form', 'method' => 'POST', 'accept-charset' => 'UTF-8']
-        );
-    }
-
-    /**
      * @param $identifier
      * @return string
      * @throws moodle_exception
