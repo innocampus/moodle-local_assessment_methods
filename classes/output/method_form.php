@@ -36,48 +36,31 @@ require_once($CFG->libdir . '/formslib.php');
 class method_form extends \moodleform {
 
     public function definition() {
-        /** @var HTML_QuickForm_text $method_elem */
-        $setting = False;
-        $method = $this->optional_param('method',null, PARAM_NOTAGS);
         $mform = $this->_form;
 
         // General settings
         $mform->addElement('header', 'generalheader',get_string('general'));
-        $mform->addElement('hidden', 'action', manager::ACTION_EXECUTE_FORM)->setType(PARAM_ALPHA);
+        $mform->addElement('hidden', 'action', manager::ACTION_EXECUTE_FORM);
+        $mform->setType('action', PARAM_ALPHAEXT);
         /** @var HTML_QuickForm_text $elem */
         $elem = $mform->addElement('text', 'method_id', helper::get_string('method_id'));
-        $elem->setType(PARAM_ALPHA);
+        $mform->setType('method_id', PARAM_ALPHAEXT);
         $mform->addRule('method_id', get_string('required'),'required');
-        if ($method) {
-            $elem->setValue($method);
-            $elem->setAttributes(['disabled' => 'disabled']);
-            $setting = helper::get_setting();  // used later
+        if ($this->_customdata['edit']) {
+            $elem->freeze();
         }
 
         // Translations
         $mform->addElement('header', 'settingsheader', helper::get_string('translations'));
         $lang_strings = get_string_manager()->get_list_of_translations();
         foreach ($lang_strings as $lang_code => $localized_string) {
-            /** @var HTML_QuickForm_text $elem */
-            $elem = $mform->addElement('text', self::get_translation_element_name($lang_code), $localized_string);
-            $elem->setType(PARAM_NOTAGS);
-            if ($setting && isset($setting[$method])) {
-                $elem->setValue($setting[$method][$lang_code]);
-            }
+            $name = self::get_translation_element_name($lang_code);
+            $mform->addElement('text', $name, $localized_string);
+            $mform->setType($name, PARAM_TEXT);
         }
         $mform->setExpanded('generalheader');
         $mform->setExpanded('settingsheader');
         $this->add_action_buttons();
-    }
-
-    public function definition_after_data()
-    {
-        parent::definition_after_data();
-        /** @var HTML_QuickForm_text $method_element */
-        $method_element = $this->_form->getElement('method_id');
-        if (!empty($method_element->getValue())) {
-            $method_element->setAttributes(['disabled' => 'disabled']);
-        }
     }
 
     public static function get_translation_element_name(string $lang_code) : string {

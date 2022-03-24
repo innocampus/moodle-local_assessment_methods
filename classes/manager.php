@@ -49,14 +49,15 @@ class manager {
      * @throws moodle_exception
      */
     public static function execute(string $action) {
-        $method = optional_param('method', null, PARAM_ALPHA);
+        $method = optional_param('method', null, PARAM_ALPHAEXT);
         switch ($action) {
             case self::ACTION_EXECUTE_FORM:
-                self::process_form();
-                redirect(helper::get_admin_setting_url());
+                self::process_form($method);
                 break;
             case self::ACTION_DELETE_METHOD:
-                self::delete_method($method);
+                // TODO confirmation form?
+                require_sesskey();
+                helper::delete_method($method);
                 redirect(helper::get_admin_setting_url());
                 break;
             case self::ACTION_VIEW_FORM:
@@ -143,7 +144,6 @@ class manager {
         $PAGE->set_title($title);
         $PAGE->set_url($url);
 
-        require_login(SITEID, false);
         require_capability($capability, $context);
 
         echo $OUTPUT->header();
@@ -156,7 +156,7 @@ class manager {
     private static function show_form($method) {
         global $OUTPUT;
 
-        $form = helper::get_method_form();
+        $form = helper::get_method_form($method);
         $form->display();
         echo $OUTPUT->footer();
     }
@@ -171,7 +171,7 @@ class manager {
         /** @var output\renderer $renderer */
         $renderer = $PAGE->get_renderer('local_assessment_methods');
         echo $renderer->method_link();
-        $table = new output\setting_table(helper::get_setting(), true, true);
+        $table = new output\setting_table(helper::get_methods(), true, true);
         if (!$table->is_empty()) {
             echo $renderer->render($table);
             echo $renderer->method_link();
@@ -197,37 +197,30 @@ class manager {
     /**
      * @throws moodle_exception
      */
-    private static function process_form() {
-        $form = helper::get_method_form();
+    private static function process_form($method) {
+        global $OUTPUT;
+        $form = helper::get_method_form($method);
         if ($form->is_cancelled()) {
             redirect(helper::get_admin_setting_url());
-        } else if ($form->is_submitted() && $form->is_validated()) {
-            $data = $form->get_data();
+        } else if ($data = $form->get_data()) {
             $setting = [];
             $lang_codes = array_keys(get_string_manager()->get_list_of_languages());
             foreach ($lang_codes as $lc) {
                 $name = $form::get_translation_element_name($lc);
-                if (isset($data[$name]) && !empty($data[$name])) {
-                    $setting[$lc] = $data[$name];
+                if (isset($data->$name) && !empty($data->$name)) {
+                    $setting[$lc] = $data->$name;
                 }
             }
             if (!empty($setting)) {
-                helper::add_setting($data->method, $setting);
+                helper::add_or_update_method($data->method_id, $setting);
             }
+            redirect(helper::get_admin_setting_url());
+        } else {
+            self::make_page_header(self::ACTION_VIEW_FORM, $method);
+            echo $OUTPUT->notification('Invalid data given', 'error'); // TODO translate
+            echo $OUTPUT->continue_button(helper::get_method_edit_url($method));
+            echo $OUTPUT->footer();
         }
     }
 
-    /**
-     * @param $method
-     * @throws moodle_exception
-     */
-    private static function delete_method($method) {
-        if ($method) {
-            $setting = helper::get_setting();
-            if (isset($setting[$method])) {
-                unset($setting[$method]);
-                helper::write_setting($setting);
-            }
-        }
-    }
 }

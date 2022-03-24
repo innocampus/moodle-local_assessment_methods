@@ -40,8 +40,8 @@ function local_assessment_methods_coursemodule_standard_elements($formwrapper, $
 function local_assessment_methods_coursemodule_edit_post_actions($data, $course) {
     global $DB, $USER;
 
-    if (!isset($date->assessment_method) || empty($data->assessment_method)) {
-        // ensure existence of the property
+    // ensure existence of the property
+    if (empty($data->assessment_method)) {
         return;
     }
 
@@ -60,49 +60,31 @@ function local_assessment_methods_coursemodule_edit_post_actions($data, $course)
 }
 
 /**
- * @return array|false The (associated) array maps lang code to their resp. index number
- * @throws dml_exception
- */
-function get_lang_indexes() {
-    $keys_raw = get_config('local_assessment_methods', 'lang_filter');
-    $keys = explode(LOCAL_ASSESSMENT_METHODS_DELIMITER, $keys_raw);
-    return array_combine($keys, range(0, count($keys)-1));
-}
-
-/**
  * @param $module
  * @return array
  * @throws coding_exception
  * @throws dml_exception
  */
 function get_method_options($module) {
-    /** @var stdClass $config */
-    $config = \local_assessment_methods\helper::get_setting();
-    $indexes = get_lang_indexes();
-    $lang = current_language();
-    if (isset($indexes[$lang])) {
-        $lang_index = $indexes[$lang];
-    } else {
-        $lang = get_parent_language($lang);
-        if (isset($indexes[$lang])) {
-            $lang_index = $indexes[$lang];
+    /** @var stdClass $methods */
+    $methods = \local_assessment_methods\helper::get_methods();
+
+    $options = [];
+    foreach ($methods as $method => $langs) {
+        if (empty($langs)) {
+            $options[$method] = $method;
+            continue;
+        }
+        $lang = current_language();
+        while ($lang && empty($langs[$lang])) {
+            $lang = get_parent_language($lang);
+        }
+        if ($lang) {
+            $options[$method] = $langs[$lang];
         } else {
-            $lang_index = $indexes[LOCAL_ASSESSMENT_METHODS_KEY_INDEX] === 0 ? 1 : 0;
+            $options[$method] = reset($langs);
         }
     }
-    $methods = [];
-    $methods_raw = $config->{"${module}_methods"};
-    if (!empty($methods_raw)) {
-        $method_lines = explode(PHP_EOL, $methods_raw);
-        $max_index = max($lang_index, $indexes[LOCAL_ASSESSMENT_METHODS_KEY_INDEX]);
-        foreach ($method_lines as $method_line) {
-            if (substr_count($method_line, LOCAL_ASSESSMENT_METHODS_DELIMITER) >= $max_index) {
-                $method = explode(LOCAL_ASSESSMENT_METHODS_DELIMITER, $method_line);
-                $methods[$method[$indexes[LOCAL_ASSESSMENT_METHODS_KEY_INDEX]]] = $method[$lang_index];
-            } else {
-                $methods[] = '[' . get_string('missing_index', 'local_assessment_methods', $max_index) . ']';
-            }
-        }
-    }
-    return $methods;
+
+    return $options;
 }

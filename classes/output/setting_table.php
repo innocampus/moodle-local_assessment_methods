@@ -65,8 +65,8 @@ class setting_table implements \renderable {
         $table = new html_table();
         $table->head = $this->create_assessment_methods_table_head();
         $rows = [];
-        foreach (array_keys($this->data) as $method) {
-            $rows[] = $this->create_assessment_methods_table_row_data($method);
+        foreach ($this->data as $method => $langs) {
+            $rows[] = $this->create_assessment_methods_table_row_data($method, $langs);
         }
         $table->data = $rows;
         return $table;
@@ -97,22 +97,24 @@ class setting_table implements \renderable {
      * @return html_table_row
      * @throws moodle_exception
      */
-    private function create_assessment_methods_table_row_data($method_id): html_table_row {
+    private function create_assessment_methods_table_row_data($method_id, $langs): html_table_row {
+        global $OUTPUT;
+
         $row = new html_table_row();
         $row->cells = [new html_table_cell($method_id)];
         foreach ($this->languages as $lc => $_) {
-            $row->cells[] = new html_table_cell($this->data[$method_id][$lc] ?? 'Not defined'); //TODO translate
+            $row->cells[] = new html_table_cell($langs[$lc] ?? 'Not defined'); //TODO translate
         }
         if ($this->canedit || $this->candelete) {
             $cell = new html_table_cell();
             $cell->text = "";
             if ($this->canedit) {
-                $icon = new pix_icon('edit', 'Edit');  //TODO translate
-                $cell->text .= html_writer::link(helper::get_method_edit_url($method_id), $icon->pix);
+                $icon = new pix_icon('t/edit', 'Edit');  //TODO translate
+                $cell->text .= html_writer::link(helper::get_method_edit_url($method_id), $OUTPUT->render($icon));
             }
             if ($this->candelete) {
-                $icon = new pix_icon('delete', 'Delete');  //TODO translate
-                $cell->text .= html_writer::link(helper::get_method_delete_url($method_id), $icon->pix);
+                $icon = new pix_icon('t/delete', 'Delete');  //TODO translate
+                $cell->text .= html_writer::link(helper::get_method_delete_url($method_id), $OUTPUT->render($icon));
             }
             $row->cells[] = $cell;
         }

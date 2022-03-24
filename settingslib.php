@@ -34,7 +34,7 @@ class admin_setting_local_assessment_methods extends admin_setting {
      */
     public function get_setting()
     {
-        return \local_assessment_methods\helper::get_setting();
+        return \local_assessment_methods\helper::get_methods();
     }
 
     /**
