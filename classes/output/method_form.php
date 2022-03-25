@@ -38,22 +38,23 @@ class method_form extends \moodleform {
     public function definition() {
         $mform = $this->_form;
 
-        $mform->addElement('hidden', 'action', manager::ACTION_EXECUTE_FORM);
-        $mform->setType('action', PARAM_ALPHA);
-
         // General settings
         $mform->addElement('header', 'generalheader',get_string('general'));
         $mform->setExpanded('generalheader');
 
-        $mform->addElement('hidden', 'action', manager::ACTION_EXECUTE_FORM);
-        $mform->setType('action', PARAM_ALPHAEXT);
         /** @var HTML_QuickForm_text $elem */
         $elem = $mform->addElement('text', 'method_id', helper::get_string('method_id'));
-        $mform->setType('method_id', PARAM_ALPHAEXT);
-        $mform->addRule('method_id', get_string('required'),'required');
+        $mform->setType('method_id', PARAM_ALPHANUMEXT);
         if ($this->_customdata['edit']) {
             $elem->freeze();
+        } else {
+            $mform->addRule('method_id', get_string('required'),'required');
         }
+
+        $mform->addElement('select', 'visibility', helper::get_string('method_visibility'), [
+            manager::VISIBILITY_ALL => helper::get_string('visibility_all'),
+            manager::VISIBILITY_HIDDEN => helper::get_string('visibility_hidden')
+        ]);
 
         // Translations
         $mform->addElement('header', 'settingsheader', helper::get_string('translations'));

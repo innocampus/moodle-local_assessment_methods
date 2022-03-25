@@ -56,7 +56,7 @@ class helper {
      * @return moodle_url
      * @throws moodle_exception
      */
-    public static function get_method_edit_url(?string $id): moodle_url {
+    public static function get_method_edit_url(?string $id = null): moodle_url {
         $url = new moodle_url(self::PLUGIN_PATH . 'index.php', ['action' => manager::ACTION_VIEW_FORM]);
         if ($id) {
             $url->param('method', $id);
@@ -93,26 +93,15 @@ class helper {
     }
 
     /**
+     * @return moodle_url
      * @throws moodle_exception
      */
-    public static function get_method_form($method = null): output\method_form {
-        $form = new output\method_form(
-            new moodle_url(self::PLUGIN_PATH . 'index.php'),
-            ['edit' => !empty($method)]
-        );
+    public static function get_form_action_url($method = null): moodle_url {
+        $params = ['action' => manager::ACTION_VIEW_FORM];
         if ($method) {
-            $data = new \stdClass();
-            $data->method_id = $method;
-            $methods = self::get_methods();
-            if (!empty($methods[$method])) {
-                foreach ($methods[$method] as $lang => $name) {
-                    $el = output\method_form::get_translation_element_name($lang);
-                    $data->$el = $name;
-                }
-            }
-            $form->set_data($data);
+            $params['method'] = $method;
         }
-        return $form;
+        return new moodle_url(self::PLUGIN_PATH . 'index.php', $params);
     }
 
     /**
@@ -140,13 +129,15 @@ class helper {
      * Writes the settings
      *
      * @param array $methods an array with following structure:
-     *  +- method1 -+- en_en -- English string
-     *  |           +- de_de -- German string
-     *  |           +- es_es -- Spanish string
+     *  +- method1 -+- translations -+- en_en -- English string
+     *  |           |                +- de_de -- German string
+     *  |           |                +- es_es -- Spanish string
+     *  |           +- visibility -- int
      *  |
-     *  +- method2 -+- en_en -- English string
-     *              +- de_de -- German string
-     *              +- es_es -- Spanish string
+     *  +- method2 -+- translations -+- en_en -- English string
+     *              |                +- de_de -- German string
+     *              |                +- es_es -- Spanish string
+     *              +- visibility -- int
      */
     public static function write_methods(array $methods) {
         set_config('methods_json', json_encode($methods), 'local_assessment_methods');
@@ -160,10 +151,14 @@ class helper {
      * -+- en_en -- English string
      *  +- de_de -- German string
      *  +- es_es -- Spanish string
+     * @param int $visibility
      */
-    public static function add_or_update_method(string $method, array $langs) {
+    public static function add_or_update_method(string $method, array $langs, int $visibility = manager::VISIBILITY_ALL) {
         $methods = self::get_methods();
-        $methods[$method] = $langs;
+        $methods[$method] = [
+            'translations' => $langs,
+            'visibility' => $visibility
+        ];
         self::write_methods($methods);
     }
 

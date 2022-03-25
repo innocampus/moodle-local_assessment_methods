@@ -44,18 +44,6 @@ class renderer extends \renderer_base {
     }
 
     /**
-     * @return string
-     * @throws coding_exception
-     */
-    public function no_methods_box(): string
-    {
-        return html_writer::div(
-            get_string('setting_table_empty_notice', 'local_assessment_methods'),
-            'alert alert-info alert-block'
-        );
-    }
-
-    /**
      * @param setting_table $table
      * @return string
      * @throws moodle_exception

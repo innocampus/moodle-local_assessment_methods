@@ -39,21 +39,21 @@ require_once($CFG->libdir . '/formslib.php');
 class manager {
 
     const ACTION_DELETE_METHOD = 'delete';
-    const ACTION_EXECUTE_FORM = 'exe-form';
-    const ACTION_VIEW_FORM = 'view-form';
+    const ACTION_VIEW_FORM = 'edit';
     const ACTION_VIEW_ADMIN_PAGE = 'admin';
     const ACTION_VIEW_REPORT = 'report';
+
+    const VISIBILITY_HIDDEN = 0;
+    const VISIBILITY_ADMINS_ONLY = 1; // TODO do
+    const VISIBILITY_ALL = 2;
 
     /**
      * @param string $action
      * @throws moodle_exception
      */
     public static function execute(string $action) {
-        $method = optional_param('method', null, PARAM_ALPHAEXT);
+        $method = optional_param('method', null, PARAM_ALPHANUMEXT);
         switch ($action) {
-            case self::ACTION_EXECUTE_FORM:
-                self::process_form($method);
-                break;
             case self::ACTION_DELETE_METHOD:
                 // TODO confirmation form?
                 require_sesskey();
@@ -61,8 +61,7 @@ class manager {
                 redirect(helper::get_admin_setting_url());
                 break;
             case self::ACTION_VIEW_FORM:
-                self::make_page_header($action, $method);
-                self::show_form($method);
+                self::process_form($method);
                 break;
             case self::ACTION_VIEW_ADMIN_PAGE:
                 self::make_page_header($action);
@@ -92,10 +91,6 @@ class manager {
 
         $PAGE->set_pagelayout("admin");
         $PAGE->set_context($context);
-        $PAGE->navbar->add(
-            get_string('administrationsite'),
-            new moodle_url('/admin/search.php')
-        );
 
         switch ($for_action) {
             case self::ACTION_VIEW_FORM:
@@ -106,60 +101,25 @@ class manager {
                 if ($method) {
                     $url->param('method', $method);
                 }
-                // breadcrumbs
-                $PAGE->navbar->add(
-                    get_string('plugins', 'admin'),
-                    new moodle_url('/admin/search.php#linkmodules')
-                );
-                $PAGE->navbar->add(
-                    helper::get_string('pluginname'),
-                    helper::get_admin_setting_url()
-                );
                 break;
             case self::ACTION_VIEW_ADMIN_PAGE:
-                $title = helper::get_string('pluginname');
+                $title = helper::get_string('assessment_method_list');
                 $capability = 'local/assessment_methods:manage';
-                // breadcrumbs
-                $PAGE->navbar->add(
-                    get_string('plugins', 'admin'),
-                    new moodle_url('/admin/search.php#linkmodules')
-                );
                 break;
             case self::ACTION_VIEW_REPORT:
-            default:
                 $title = helper::get_string('report');
                 $capability = 'local/assessment_methods:view_report';
-                // breadcrumbs
-                $PAGE->navbar->add(
-                    get_string('reports'),
-                    new moodle_url('/admin/search.php#linkreports')
-                );
-                $PAGE->navbar->add(
-                    helper::get_string('pluginname'),
-                    helper::get_admin_setting_url()
-                );
+                break;
+            default:
+                throw new \moodle_exception('unknown_action', 'local_assessment_methods');
         }
 
-        $PAGE->navbar->add($title);
         $PAGE->set_title($title);
-        $PAGE->set_heading($title);
         $PAGE->set_url($url);
 
         require_capability($capability, $context);
 
         echo $OUTPUT->header();
-    }
-
-    /**
-     * @param $method
-     * @throws moodle_exception
-     */
-    private static function show_form($method) {
-        global $OUTPUT;
-
-        $form = helper::get_method_form($method);
-        $form->display();
-        echo $OUTPUT->footer();
     }
 
     /**
@@ -177,7 +137,7 @@ class manager {
             echo $renderer->render($table);
             echo $renderer->method_link();
         } else {
-            echo $renderer->no_methods_box();
+            echo $OUTPUT->notification(helper::get_string('setting_table_empty_notice'), 'info');
         }
         echo $OUTPUT->footer();
     }
@@ -200,26 +160,40 @@ class manager {
      */
     private static function process_form($method) {
         global $OUTPUT;
-        $form = helper::get_method_form($method);
+
+        $form = new output\method_form(
+            helper::get_form_action_url($method),
+            ['edit' => !empty($method)]
+        );
         if ($form->is_cancelled()) {
             redirect(helper::get_admin_setting_url());
         } else if ($data = $form->get_data()) {
-            $setting = [];
+            $translations = [];
             $lang_codes = array_keys(get_string_manager()->get_list_of_languages());
             foreach ($lang_codes as $lc) {
                 $name = $form::get_translation_element_name($lc);
                 if (isset($data->$name) && !empty($data->$name)) {
-                    $setting[$lc] = $data->$name;
+                    $translations[$lc] = $data->$name;
                 }
             }
-            if (!empty($setting)) {
-                helper::add_or_update_method($data->method_id, $setting);
-            }
+            helper::add_or_update_method($method ?? $data->method_id, $translations, $data->visibility);
             redirect(helper::get_admin_setting_url());
         } else {
             self::make_page_header(self::ACTION_VIEW_FORM, $method);
-            echo $OUTPUT->notification('Invalid data given', 'error'); // TODO translate
-            echo $OUTPUT->continue_button(helper::get_method_edit_url($method));
+            if ($method) {
+                $data = new \stdClass();
+                $data->method_id = $method;
+                $methods = helper::get_methods();
+                if (!empty($methods[$method])) {
+                    $data->visibility = $methods[$method]['visibility'];
+                    foreach ($methods[$method]['translations'] as $lang => $name) {
+                        $el = output\method_form::get_translation_element_name($lang);
+                        $data->$el = $name;
+                    }
+                }
+                $form->set_data($data);
+            }
+            $form->display();
             echo $OUTPUT->footer();
         }
     }

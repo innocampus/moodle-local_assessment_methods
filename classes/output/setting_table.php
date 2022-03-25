@@ -29,6 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 
 use core_tag\output\tag;
 use local_assessment_methods\helper;
+use local_assessment_methods\manager;
 use moodle_exception;
 use moodle_page;
 use html_table;
@@ -65,8 +66,8 @@ class setting_table implements \renderable {
         $table = new html_table();
         $table->head = $this->create_assessment_methods_table_head();
         $rows = [];
-        foreach ($this->data as $method => $langs) {
-            $rows[] = $this->create_assessment_methods_table_row_data($method, $langs);
+        foreach ($this->data as $method => $method_data) {
+            $rows[] = $this->create_assessment_methods_table_row_data($method, $method_data);
         }
         $table->data = $rows;
         return $table;
@@ -97,13 +98,16 @@ class setting_table implements \renderable {
      * @return html_table_row
      * @throws moodle_exception
      */
-    private function create_assessment_methods_table_row_data($method_id, $langs): html_table_row {
+    private function create_assessment_methods_table_row_data($method_id, $method_data): html_table_row {
         global $OUTPUT;
 
         $row = new html_table_row();
+        if ($method_data['visibility'] !== manager::VISIBILITY_ALL) {
+            $row->attributes['class'] .= ' text-muted';
+        }
         $row->cells = [new html_table_cell($method_id)];
         foreach ($this->languages as $lc => $_) {
-            $row->cells[] = new html_table_cell($langs[$lc] ?? 'Not defined'); //TODO translate
+            $row->cells[] = new html_table_cell($method_data['translations'][$lc] ?? 'Not defined'); //TODO translate
         }
         if ($this->canedit || $this->candelete) {
             $cell = new html_table_cell();
