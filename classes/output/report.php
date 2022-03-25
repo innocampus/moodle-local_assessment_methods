@@ -24,39 +24,57 @@
 
 namespace local_assessment_methods\output;
 
-use coding_exception;
-use html_writer;
-use moodle_exception;
+use html_table;
+use moodle_page;
 
 defined('MOODLE_INTERNAL') || die();
 
-class renderer extends \renderer_base {
+/**
+ * Class renderer
+ * @package local_assessment_methods\output
+ * @property-read \stdClass $data
+ */
+class report implements \renderable {
+    //TODO make this work!
 
-    /**
-     * @return string
-     * @throws coding_exception
-     * @throws moodle_exception
-     */
-    public function method_link(): string {
-        return html_writer::link(\local_assessment_methods\helper::get_method_add_url(),
-            get_string('create_method_button_text', 'local_assessment_methods'),
-            ['class' => 'btn btn-secondary mb-3']);
+    /** @var array $data */
+    private array $data;
+
+    function __construct(array $data) {
+        $this->data = $data;
     }
 
     /**
-     * @param setting_table $table
-     * @return string
-     * @throws moodle_exception
+     * @return html_table
      */
-    public function render_setting_table(setting_table $table): string {
-        return html_writer::table($table->create());
+    public function table(): html_table {
+        $table = new html_table();
+        $table->head = $this->create_table_header();
+        $table->data = [];
+        foreach (array_keys($this->data) as $row_id) {
+            $table->data[] = $this->create_table_row($row_id);
+        }
+        return $table;
     }
 
-    /**
-     * @param report $report
-     * @return string
-     */
-    public function render_report(report $report): string {
-        return html_writer::table($report->table());
+    private function create_table_header(): array {
+        return [];
     }
+
+    private function create_table_row($row_id): ?\html_table_row {
+        return null;
+    }
+
+    static function filter_form(): ?\moodleform {
+        return null;
+    }
+
+    static function quiz_svg(): string {
+        return '';
+    }
+
+    static function assign_svg(): string {
+        return '';
+    }
+
 }

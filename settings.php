@@ -1,51 +1,30 @@
 <?php
 
-$temp = new admin_settingpage('assessmentmethods', get_string('pluginname', 'local_assessment_methods'), 'local/assessment_methods:manage');
-
-$temp->add(new admin_setting_configtext(
-    'local_assessment_methods/lang_filter',
-    get_string('lang_filter', 'local_assessment_methods'),
-    get_string('lang_filter_desc', 'local_assessment_methods'),
-    'key|de|en'
-));
-
-$temp->add(new admin_setting_configtextarea(
-    'local_assessment_methods/quiz_methods',
-    get_string('quiz_methods', 'local_assessment_methods'),
-    get_string('methods_desc', 'local_assessment_methods'),
-    <<<EOL
-home_exam|Digitale Fernprüfung (Klausur)|E-Exam at home
-e_exam|Digitale Präsenzprüfung (Klausur)|E-Exam at university
-portfolio|Portfolio-Teilleistung|Part of Portfolio exam
-thesis|Abschlussarbeit|Thesis
-prerequisite|Klausurvorraussetzung|Prerequiste for exam
-trial|Probeklausur|Trial exam
-homework|Hausaufgabe|Homework
-self|Vertiefung/Selbststudium|Self-Assignment
-EOL
-));
-
-$temp->add(new admin_setting_configtextarea(
-    'local_assessment_methods/assign_methods',
-    get_string('assign_methods', 'local_assessment_methods'),
-    get_string('methods_desc', 'local_assessment_methods'),
-    <<<EOL
-home_exam|Digitale Fernprüfung (Klausur)|E-Exam at home
-e_exam|Digitale Präsenzprüfung (Klausur)|E-Exam at university
-portfolio|Portfolio-Teilleistung|Part of Portfolio exam
-thesis|Abschlussarbeit|Thesis
-prerequisite|Klausurvorraussetzung|Prerequiste for Exam
-trial|Probeklausur|Trial exam
-homework|Hausaufgabe|Homework
-self|Vertiefung/Selbststudium|Self-Assignment
-EOL
-));
+//TODO: Make usable activities selectable
 
 /** @var admin_category $ADMIN */
-$ADMIN->add('localplugins', $temp);
+$ADMIN->add('localplugins', new admin_category(
+    'assessmentmethods',
+    get_string('pluginname', 'local_assessment_methods')
+));
+
+$ADMIN->add('assessmentmethods', new admin_externalpage(
+    'assessmentmethods_admin',
+    get_string('assessment_method_list', 'local_assessment_methods'),
+    \local_assessment_methods\helper::get_admin_setting_url(),
+    'local/assessment_methods:manage'
+));
+
+$ADMIN->add('assessmentmethods', new admin_externalpage(
+    'assessmentmethods_create',
+    get_string('create_method', 'local_assessment_methods'),
+    \local_assessment_methods\helper::get_method_edit_url(),
+    'local/assessment_methods:manage'
+));
+
 $ADMIN->add('reports', new admin_externalpage(
-    'assessmentmethodsreport',
+    'assessmentmethods_report',
     get_string('pluginname', 'local_assessment_methods'),
-    $CFG->wwwroot . '/local/assessment_methods/report.php',
+    \local_assessment_methods\helper::get_report_url(),
     'local/assessment_methods:view_report'
 ));
