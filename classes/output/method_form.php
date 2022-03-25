@@ -38,8 +38,13 @@ class method_form extends \moodleform {
     public function definition() {
         $mform = $this->_form;
 
+        $mform->addElement('hidden', 'action', manager::ACTION_EXECUTE_FORM);
+        $mform->setType('action', PARAM_ALPHA);
+
         // General settings
         $mform->addElement('header', 'generalheader',get_string('general'));
+        $mform->setExpanded('generalheader');
+
         $mform->addElement('hidden', 'action', manager::ACTION_EXECUTE_FORM);
         $mform->setType('action', PARAM_ALPHAEXT);
         /** @var HTML_QuickForm_text $elem */
@@ -52,14 +57,18 @@ class method_form extends \moodleform {
 
         // Translations
         $mform->addElement('header', 'settingsheader', helper::get_string('translations'));
+        $mform->setExpanded('settingsheader');
+
         $lang_strings = get_string_manager()->get_list_of_translations();
         foreach ($lang_strings as $lang_code => $localized_string) {
             $name = self::get_translation_element_name($lang_code);
             $mform->addElement('text', $name, $localized_string);
             $mform->setType($name, PARAM_TEXT);
+            if ($lang_code === 'en' or substr($lang_code, 0, 3) === 'en_') {
+                $mform->addRule($name, get_string('required'), 'required');
+            }
         }
-        $mform->setExpanded('generalheader');
-        $mform->setExpanded('settingsheader');
+
         $this->add_action_buttons();
     }
 

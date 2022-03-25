@@ -22,14 +22,13 @@
  * @copyright  2022 Technische Universität Berlin
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-use local_assessment_methods\helper;
 use local_assessment_methods\manager;
 
 require_once('../../config.php');
 require_once($CFG->libdir . '/formslib.php');
 
 require_login(SITEID, false);
-require_admin();
+//require_admin();
 
 $action = optional_param('action', '', PARAM_ALPHANUMEXT);
 $license = optional_param('method', '', PARAM_ALPHA);

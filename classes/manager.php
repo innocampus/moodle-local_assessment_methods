@@ -90,8 +90,8 @@ class manager {
         $url = new moodle_url(helper::PLUGIN_PATH . 'index.php', ['action' => $for_action]);
         $context = context_system::instance();
 
+        $PAGE->set_pagelayout("admin");
         $PAGE->set_context($context);
-        $PAGE->set_pagelayout("standard");
         $PAGE->navbar->add(
             get_string('administrationsite'),
             new moodle_url('/admin/search.php')
@@ -142,6 +142,7 @@ class manager {
 
         $PAGE->navbar->add($title);
         $PAGE->set_title($title);
+        $PAGE->set_heading($title);
         $PAGE->set_url($url);
 
         require_capability($capability, $context);
