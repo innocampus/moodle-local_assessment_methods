@@ -2,9 +2,6 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-define('LOCAL_ASSESSMENT_METHODS_DELIMITER', '|');
-define('LOCAL_ASSESSMENT_METHODS_KEY_INDEX', 'key');
-
 /**
  * @param $formwrapper
  * @param MoodleQuickForm $mform
@@ -24,7 +21,7 @@ function local_assessment_methods_coursemodule_standard_elements($formwrapper, $
         $selected = $record->method;
     }
 
-    $options = get_method_options($selected, $wrapper->modulename);
+    $options = \local_assessment_methods\helper::get_method_options($selected, $wrapper->modulename);
     if (empty($options)) {
         return;
     }
@@ -72,38 +69,4 @@ function local_assessment_methods_coursemodule_edit_post_actions($data, $course)
             ['cmid' => $data->coursemodule, 'userid' => $userid, 'method' => $data->assessment_method]
         );
     }
-}
-
-/**
- * @param $module
- * @return array
- * @throws coding_exception
- * @throws dml_exception
- */
-function get_method_options($selected, $module) {
-    /** @var stdClass $methods */
-    $methods = \local_assessment_methods\helper::get_methods();
-
-    $options = [];
-    foreach ($methods as $method => $method_data) {
-        if ($method_data['visibility'] !== \local_assessment_methods\manager::VISIBILITY_ALL && $method !== $selected) {
-            continue;
-        }
-        $langs = $method_data['translations'];
-        if (empty($langs)) {
-            $options[$method] = $method;
-            continue;
-        }
-        $lang = current_language();
-        while ($lang && empty($langs[$lang])) {
-            $lang = get_parent_language($lang);
-        }
-        if ($lang) {
-            $options[$method] = $langs[$lang];
-        } else {
-            $options[$method] = reset($langs);
-        }
-    }
-
-    return $options;
 }

@@ -175,4 +175,38 @@ class helper {
             }
         }
     }
+
+    /**
+     * @param $module
+     * @return array
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public static function get_method_options($selected, $module) {
+        /** @var \stdClass $methods */
+        $methods = self::get_methods();
+
+        $options = [];
+        foreach ($methods as $method => $method_data) {
+            if ($method_data['visibility'] !== \local_assessment_methods\manager::VISIBILITY_ALL && $method !== $selected) {
+                continue;
+            }
+            $langs = $method_data['translations'];
+            if (empty($langs)) {
+                $options[$method] = $method;
+                continue;
+            }
+            $lang = current_language();
+            while ($lang && empty($langs[$lang])) {
+                $lang = get_parent_language($lang);
+            }
+            if ($lang) {
+                $options[$method] = $langs[$lang];
+            } else {
+                $options[$method] = reset($langs);
+            }
+        }
+
+        return $options;
+    }
 }
