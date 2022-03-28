@@ -53,7 +53,7 @@ function local_assessment_methods_coursemodule_standard_elements($formwrapper, $
  * @throws dml_exception
  */
 function local_assessment_methods_coursemodule_edit_post_actions($data, $course) {
-    global $DB, $USER;
+    global $DB, $USER, $CFG;
 
     // ensure existence of the property
     if (empty($data->assessment_method)) {
@@ -61,7 +61,7 @@ function local_assessment_methods_coursemodule_edit_post_actions($data, $course)
     }
 
     // if no login is present, use guest user
-    $userid = (is_object($USER) && !empty($USER->id)) ? $USER->id : 1;
+    $userid = (is_object($USER) && !empty($USER->id)) ? $USER->id : $CFG->siteguest;
     if ($record = $DB->get_record('assessment_methods', ['cmid' => $data->coursemodule])) {
         $record->method = $data->assessment_method;
         $record->userid = $userid;
