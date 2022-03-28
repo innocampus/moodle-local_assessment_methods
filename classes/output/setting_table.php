@@ -44,10 +44,10 @@ use pix_icon;
  */
 class setting_table implements \renderable {
 
-    private array $data;
-    private bool $canedit;
-    private bool $candelete;
-    private array $languages;
+    private $data;
+    private $canedit;
+    private $candelete;
+    private $languages;
 
     function __construct(array $data, bool $canedit, bool $candelete) {
         $this->data = $data;

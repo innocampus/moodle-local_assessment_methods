@@ -38,7 +38,7 @@ class report implements \renderable {
     //TODO make this work!
 
     /** @var array $data */
-    private array $data;
+    private $data;
 
     function __construct(array $data) {
         $this->data = $data;
