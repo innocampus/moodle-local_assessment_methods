@@ -49,6 +49,7 @@ class method_form extends \moodleform {
             $elem->freeze();
         } else {
             $mform->addRule('method_id', get_string('required'),'required');
+            $mform->addRule('method_id', get_string('maximumchars', '', 100), 'maxlength', 100, 'client');
         }
 
         $mform->addElement('select', 'visibility', helper::get_string('method_visibility'), [

@@ -17,7 +17,7 @@ function local_assessment_methods_coursemodule_standard_elements($formwrapper, $
 
     $selected = null;
     if (!empty($wrapper->coursemodule)
-            && ($record = $DB->get_record('assessment_methods', ['cmid' => $wrapper->coursemodule]))) {
+            && ($record = $DB->get_record('local_assessment_methods', ['cmid' => $wrapper->coursemodule]))) {
         $selected = $record->method;
     }
 
@@ -59,13 +59,13 @@ function local_assessment_methods_coursemodule_edit_post_actions($data, $course)
 
     // if no login is present, use guest user
     $userid = (is_object($USER) && !empty($USER->id)) ? $USER->id : $CFG->siteguest;
-    if ($record = $DB->get_record('assessment_methods', ['cmid' => $data->coursemodule])) {
+    if ($record = $DB->get_record('local_assessment_methods', ['cmid' => $data->coursemodule])) {
         $record->method = $data->assessment_method;
         $record->userid = $userid;
-        $DB->update_record('assessment_methods', $record);
+        $DB->update_record('local_assessment_methods', $record);
     } else {
         $DB->insert_record(
-            'assessment_methods',
+            'local_assessment_methods',
             ['cmid' => $data->coursemodule, 'userid' => $userid, 'method' => $data->assessment_method]
         );
     }

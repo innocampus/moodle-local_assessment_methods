@@ -41,7 +41,7 @@ class backup_local_assessment_methods_plugin extends backup_local_plugin {
         $pluginwrapper->add_child($method);
 
         // Use database to get source.
-        $method->set_source_table('assessment_methods', ['cmid' => backup::VAR_MODID]);
+        $method->set_source_table('local_assessment_methods', ['cmid' => backup::VAR_MODID]);
 
         // Annotate user id.
         $method->annotate_ids('user', 'userid');

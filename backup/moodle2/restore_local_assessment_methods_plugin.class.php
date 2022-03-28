@@ -51,12 +51,12 @@ class restore_local_assessment_methods_plugin extends restore_local_plugin {
         $data->cmid = $this->task->get_moduleid();
         $data->userid = $this->get_mappingid('user', $backupdata['userid']);
 
-        $existingid = $DB->get_field('assessment_methods', 'id', ['cmid' => $data->cmid]);
+        $existingid = $DB->get_field('local_assessment_methods', 'id', ['cmid' => $data->cmid]);
         if ($existingid) {
             $data->id = $existingid;
-            $DB->update_record('assessment_methods', $data);
+            $DB->update_record('local_assessment_methods', $data);
         } else {
-            $DB->insert_record('assessment_methods', $data);
+            $DB->insert_record('local_assessment_methods', $data);
         }
 
         // No need to record the old/new id as nothing ever refers to
