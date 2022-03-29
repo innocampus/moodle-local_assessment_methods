@@ -54,7 +54,7 @@ function local_assessment_methods_coursemodule_edit_post_actions($data, $course)
 
     // ensure existence of the property
     if (empty($data->assessment_method)) {
-        return;
+        return $data;
     }
 
     // if no login is present, use guest user
@@ -69,4 +69,6 @@ function local_assessment_methods_coursemodule_edit_post_actions($data, $course)
             ['cmid' => $data->coursemodule, 'userid' => $userid, 'method' => $data->assessment_method]
         );
     }
+
+    return $data;
 }
