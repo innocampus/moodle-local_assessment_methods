@@ -81,20 +81,22 @@ class setting_table implements \renderable {
 
     /**
      * @return array
+     * @throws moodle_exception
      */
     private function create_assessment_methods_table_head(): array {
-        $head = ['ID'];    //TODO translate
+        $head = [helper::get_string('method_id')];
         foreach ($this->languages as $language) {
             $head[] = $language;
         }
         if ($this->canedit || $this->candelete) {
-            $head[] = 'Actions';            //TODO translate
+            $head[] = helper::get_string('actions');
         }
         return $head;
     }
 
     /**
      * @param $method_id
+     * @param $method_data
      * @return html_table_row
      * @throws moodle_exception
      */
@@ -107,17 +109,17 @@ class setting_table implements \renderable {
         }
         $row->cells = [new html_table_cell($method_id)];
         foreach ($this->languages as $lc => $_) {
-            $row->cells[] = new html_table_cell($method_data['translations'][$lc] ?? 'Not defined'); //TODO translate
+            $row->cells[] = new html_table_cell($method_data['translations'][$lc] ?? '-');
         }
         if ($this->canedit || $this->candelete) {
             $cell = new html_table_cell();
             $cell->text = "";
             if ($this->canedit) {
-                $icon = new pix_icon('t/edit', 'Edit');  //TODO translate
+                $icon = new pix_icon('t/edit', get_string('edit'));
                 $cell->text .= html_writer::link(helper::get_method_edit_url($method_id), $OUTPUT->render($icon));
             }
             if ($this->candelete) {
-                $icon = new pix_icon('t/delete', 'Delete');  //TODO translate
+                $icon = new pix_icon('t/delete', get_string('delete'));
                 $cell->text .= html_writer::link(helper::get_method_delete_url($method_id), $OUTPUT->render($icon));
             }
             $row->cells[] = $cell;

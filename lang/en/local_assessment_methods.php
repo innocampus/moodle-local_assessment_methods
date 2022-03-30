@@ -2,6 +2,7 @@
 
 $string['pluginname'] = 'Assessment Methods';
 
+$string['actions'] = 'Actions';
 $string['assessment_method'] = 'Assessment method';
 $string['assessment_method_help'] = 'Please choose the assessment method that best describes this activity.';
 $string['assessment_method_list'] = 'List of assessment methods';

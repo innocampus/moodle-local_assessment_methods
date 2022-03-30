@@ -2,6 +2,7 @@
 
 $string['pluginname'] = 'Prüfungsformate';
 
+$string['actions'] = 'Aktionen';
 $string['assessment_method'] = 'Prüfungsformat';
 $string['assessment_method_help'] = 'Bitte wählen das Prüfungsformat, welches diese Aktivität am besten beschreibt.';
 $string['assessment_method_list'] = 'Liste der Prüfungsformate';
