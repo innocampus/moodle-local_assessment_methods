@@ -42,6 +42,8 @@ class helper {
 
     const PLUGIN_PATH = '/local/assessment_methods/';
 
+    private static $loadedmethods = null;
+
     /**
      * @return moodle_url
      * @throws moodle_exception
@@ -114,12 +116,17 @@ class helper {
     }
 
     public static function get_methods(): array {
+        if (self::$loadedmethods !== null) {
+            return self::$loadedmethods;
+        }
         try {
             $json = get_config('local_assessment_methods', 'methods_json');
             if (!$json) {
-                return [];
+                self::$loadedmethods = [];
+            } else {
+                self::$loadedmethods = json_decode($json, true);
             }
-            return json_decode($json, true);
+            return self::$loadedmethods;
         } catch (\dml_exception $_) {
             return [];
         }
@@ -141,6 +148,7 @@ class helper {
      */
     public static function write_methods(array $methods) {
         set_config('methods_json', json_encode($methods), 'local_assessment_methods');
+        self::$loadedmethods = $methods;
     }
 
     /**
@@ -177,13 +185,15 @@ class helper {
     }
 
     /**
+     * Returns an array of options to be used in an assessment method select element (including an empty option if no
+     * method is selected). Returns an empty list if no methods are available.
+     *
+     * @param $selected
      * @param $module
      * @return array
      * @throws \coding_exception
-     * @throws \dml_exception
      */
-    public static function get_method_options($selected, $module) {
-        /** @var \stdClass $methods */
+    public static function get_method_options($selected, $module): array {
         $methods = self::get_methods();
 
         $options = [];
@@ -207,6 +217,32 @@ class helper {
             }
         }
 
+        if (!$selected && !empty($options)) {
+            $options = array_merge(
+                ['' => get_string('please_select', 'local_assessment_methods')],
+                $options
+            );
+        }
+
         return $options;
+    }
+
+    public static function set_cm_method($cmid, $method, $userid = null) {
+        global $USER, $DB, $CFG;
+        if (!$userid) {
+            // if no login is present, use guest user
+            $userid = (is_object($USER) && !empty($USER->id)) ? $USER->id : $CFG->siteguest;
+        }
+
+        if ($record = $DB->get_record('local_assessment_methods', ['cmid' => $cmid])) {
+            $record->method = $method;
+            $record->userid = $userid;
+            $DB->update_record('local_assessment_methods', $record);
+        } else {
+            $DB->insert_record(
+                'local_assessment_methods',
+                ['cmid' => $cmid, 'userid' => $userid, 'method' => $method]
+            );
+        }
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+use local_assessment_methods\helper;
+
 defined('MOODLE_INTERNAL') || die;
 
 /**
@@ -21,15 +23,9 @@ function local_assessment_methods_coursemodule_standard_elements($formwrapper, $
         $selected = $record->method;
     }
 
-    $options = \local_assessment_methods\helper::get_method_options($selected, $wrapper->modulename);
+    $options = helper::get_method_options($selected, $wrapper->modulename);
     if (empty($options)) {
         return;
-    }
-    if (!$selected) {
-        $options = array_merge(
-            ['' => get_string('please_select', 'local_assessment_methods')],
-            $options
-        );
     }
 
     $method_choice = $mform->createElement(
@@ -39,7 +35,11 @@ function local_assessment_methods_coursemodule_standard_elements($formwrapper, $
         $options
     );
     $method_choice->setSelected($selected);
-    $mform->insertElementBefore($method_choice, 'introeditor');
+    if ($mform->elementExists('local_assessment_archiving_enabled')) {
+        $mform->insertElementBefore($method_choice, 'local_assessment_archiving_enabled');
+    } else {
+        $mform->insertElementBefore($method_choice, 'introeditor');
+    }
     $mform->addRule('assessment_method', get_string('required'), 'required');
     $mform->addHelpButton('assessment_method', 'assessment_method', 'local_assessment_methods');
 }
@@ -50,25 +50,11 @@ function local_assessment_methods_coursemodule_standard_elements($formwrapper, $
  * @throws dml_exception
  */
 function local_assessment_methods_coursemodule_edit_post_actions($data, $course) {
-    global $DB, $USER, $CFG;
-
     // ensure existence of the property
     if (empty($data->assessment_method)) {
         return $data;
     }
 
-    // if no login is present, use guest user
-    $userid = (is_object($USER) && !empty($USER->id)) ? $USER->id : $CFG->siteguest;
-    if ($record = $DB->get_record('local_assessment_methods', ['cmid' => $data->coursemodule])) {
-        $record->method = $data->assessment_method;
-        $record->userid = $userid;
-        $DB->update_record('local_assessment_methods', $record);
-    } else {
-        $DB->insert_record(
-            'local_assessment_methods',
-            ['cmid' => $data->coursemodule, 'userid' => $userid, 'method' => $data->assessment_method]
-        );
-    }
-
+    helper::set_cm_method($data->coursemodule, $data->assessment_method);
     return $data;
 }

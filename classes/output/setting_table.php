@@ -89,7 +89,7 @@ class setting_table implements \renderable {
             $head[] = $language;
         }
         if ($this->canedit || $this->candelete) {
-            $head[] = helper::get_string('actions');
+            $head[] = get_string('actions');
         }
         return $head;
     }
