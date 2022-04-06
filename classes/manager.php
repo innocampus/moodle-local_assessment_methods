@@ -53,22 +53,27 @@ class manager {
      */
     public static function execute(string $action) {
         $method = optional_param('method', null, PARAM_ALPHANUMEXT);
+        $context = context_system::instance();
         switch ($action) {
             case self::ACTION_DELETE_METHOD:
                 // TODO confirmation form?
                 require_sesskey();
+                require_capability('local/assessment_methods:manage', $context);
                 helper::delete_method($method);
                 redirect(helper::get_admin_setting_url());
                 break;
             case self::ACTION_VIEW_FORM:
+                require_capability('local/assessment_methods:manage', $context);
                 self::process_form($method);
                 break;
             case self::ACTION_VIEW_ADMIN_PAGE:
+                require_capability('local/assessment_methods:manage', $context);
                 self::make_page_header($action);
                 self::show_admin_page();
                 break;
             case self::ACTION_VIEW_REPORT:
             default:
+                require_capability('local/assessment_methods:view_report', $context);
                 self::make_page_header($action);
                 self::show_report();
         }
@@ -97,18 +102,15 @@ class manager {
                 $title = $method
                     ? helper::get_string('edit_method')
                     : helper::get_string('create_method');
-                $capability = 'local/assessment_methods:manage';
                 if ($method) {
                     $url->param('method', $method);
                 }
                 break;
             case self::ACTION_VIEW_ADMIN_PAGE:
                 $title = helper::get_string('assessment_method_list');
-                $capability = 'local/assessment_methods:manage';
                 break;
             case self::ACTION_VIEW_REPORT:
                 $title = helper::get_string('report');
-                $capability = 'local/assessment_methods:view_report';
                 break;
             default:
                 throw new \moodle_exception('unknown_action', 'local_assessment_methods');
@@ -116,8 +118,6 @@ class manager {
 
         $PAGE->set_title($title);
         $PAGE->set_url($url);
-
-        require_capability($capability, $context);
 
         echo $OUTPUT->header();
     }
