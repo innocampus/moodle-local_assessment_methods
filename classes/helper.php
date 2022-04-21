@@ -227,6 +227,19 @@ class helper {
         return $options;
     }
 
+    /**
+     * Get assessment method of an activity.
+     *
+     * @param int $cmid course module id
+     * @return string|null
+     */
+    public static function get_cm_method(int $cmid) : ?string {
+        global $DB;
+
+        $method = $DB->get_field('local_assessment_methods', 'method', ['cmid' => $cmid]);
+        return ($method === false) ? null : $method;
+    }
+
     public static function set_cm_method($cmid, $method, $userid = null) {
         global $USER, $DB, $CFG;
         if (!$userid) {

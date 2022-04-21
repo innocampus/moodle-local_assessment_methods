@@ -18,9 +18,8 @@ function local_assessment_methods_coursemodule_standard_elements($formwrapper, $
     }
 
     $selected = null;
-    if (!empty($wrapper->coursemodule)
-            && ($record = $DB->get_record('local_assessment_methods', ['cmid' => $wrapper->coursemodule]))) {
-        $selected = $record->method;
+    if (!empty($wrapper->coursemodule)) {
+        $selected = \local_assessment_methods\helper::get_cm_method($wrapper->coursemodule);
     }
 
     $options = helper::get_method_options($selected, $wrapper->modulename);
