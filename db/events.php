@@ -15,19 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Assessment Methods - Force content creators to specify assignment methods in activities
+ * Event handler definition.
  *
- * @package   local_assessment_methods
- * @copyright Jan Eberhardt (@innoCampus, TU Berlin)
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    local_assessment_methods
+ * @copyright  2022 Lars Bonczek, innoCampus, TU Berlin
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-/** @var stdClass $plugin - dirty hack for PHPStorm */
-$plugin->component = 'local_assessment_methods';
-$plugin->version   = 2022042201;
-$plugin->requires  = 2020061500;
-$plugin->cron      = 0;
-$plugin->maturity  = MATURITY_RC;
-$plugin->release   = '1.00 RC';
+$observers = [
+    [
+        'eventname' => '\core\event\course_module_deleted',
+        'callback'  => '\local_assessment_methods\observer::course_module_deleted',
+    ],
+];
