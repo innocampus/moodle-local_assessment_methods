@@ -18,3 +18,8 @@ $string['visibility_hidden'] = 'Verborgen';
 $string['visibility_all'] = 'Sichtbar';
 $string['report'] = 'Bericht';
 $string['please_select'] = 'Bitte wählen Sie eine Option...';
+
+$string['course'] = 'Kurs';
+$string['user'] = 'Nutzer/-in';
+$string['duedate_timeclose'] = 'Fälligkeitsdatum/Testschließung';
+$string['assign_quiz_name'] = 'Name der Aufgabe/des Tests';

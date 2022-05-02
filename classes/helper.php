@@ -106,6 +106,45 @@ class helper {
         return new moodle_url(self::PLUGIN_PATH . 'index.php', $params);
     }
 
+    //TODO user URL DONE
+    /**
+     * @param string $userid
+     * @return moodle_url
+     * @throws moodle_exception
+     */
+    public static function get_user_url(string $userid): moodle_url {
+        return new moodle_url('/user/profile.php?id=' . $userid);
+    }
+
+    //TODO course URL DONE
+    /**
+     * @param string $courseid
+     * @return moodle_url
+     * @throws moodle_exception
+     */
+    public static function get_course_url(string $courseid): moodle_url {
+        return new moodle_url('/course/view.php?id=' . $courseid);
+    }
+
+    //TODO assign/quiz URL DONE
+    /**
+     * @param string $cmid
+     * @param string $cmmodule
+     * @return moodle_url
+     * @throws moodle_exception
+     */
+    public static function get_assquiz_url(string $cmid, $cmmodule): moodle_url {
+        $url = null;
+        if ($cmmodule == '1') {
+            $url = new moodle_url('/mod/assign/view.php?id=' . $cmid);
+        }
+        elseif ($cmmodule == '23') {
+            $url = new moodle_url('/mod/quiz/view.php?id=' . $cmid);
+        }
+        return $url;
+    }
+
+
     /**
      * @param $identifier
      * @return string

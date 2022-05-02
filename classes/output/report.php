@@ -25,6 +25,7 @@
 namespace local_assessment_methods\output;
 
 use html_table;
+use local_assessment_methods\helper;
 use moodle_page;
 
 defined('MOODLE_INTERNAL') || die();
@@ -58,11 +59,52 @@ class report implements \renderable {
     }
 
     private function create_table_header(): array {
-        return [];
+        return array(get_string('method_id', 'local_assessment_methods'), get_string('duedate_timeclose', 'local_assessment_methods'), get_string('assign_quiz_name', 'local_assessment_methods'), get_string('assessment_method', 'local_assessment_methods'), get_string('course', 'local_assessment_methods'), get_string('user', 'local_assessment_methods'));
     }
 
-    private function create_table_row($row_id): ?\html_table_row {
-        return null;
+    private function create_table_row($row_id): ?\html_table_row
+    {
+        //echo nl2br("PAUSE \n");
+
+        // from unix time stamp to a readable date and time format
+        $date = $this->data[$row_id]->over;
+        $this->data[$row_id]->over = userdate($date);
+
+        /*
+         * from course module id and course module module to the relative
+         * assign or quiz URL
+         */
+        $id = $this->data[$row_id]->cmid;
+        $mod = $this->data[$row_id]->cmmod;
+        unset($this->data[$row_id]->cmid);
+        unset($this->data[$row_id]->cmmod);
+        $name = $this->data[$row_id]->name;
+        $url = helper::get_assquiz_url($id, $mod);
+        $this->data[$row_id]->name = \html_writer::link($url, $name);
+
+        // from the method code word to the respective translation
+        //$method = $this->data[$row_id]->method;
+        //$this->data[$row_id]->method = helper::get_methods();
+
+        //var_dump($this->data[$row_id]->method);
+
+        // from course id to the relative course URL
+        $id = $this->data[$row_id]->cid;
+        unset($this->data[$row_id]->cid);
+        $name = $this->data[$row_id]->cname;
+        $url = helper::get_course_url($id);
+        $this->data[$row_id]->cname = \html_writer::link($url, $name);
+
+        // from user id to the relative user URL
+        $id = $this->data[$row_id]->uid;
+        unset($this->data[$row_id]->uid);
+        $name = $this->data[$row_id]->uname;
+        $url = helper::get_user_url($id);
+        $this->data[$row_id]->uname = \html_writer::link($url, $name);
+
+        $table_row = new \html_table_row((array)$this->data[$row_id]);
+
+        return $table_row;
     }
 
     static function filter_form(): ?\moodleform {

@@ -18,3 +18,8 @@ $string['visibility_hidden'] = 'Hidden';
 $string['visibility_all'] = 'Visible';
 $string['report'] = 'Report';
 $string['please_select'] = 'Please select an option...';
+
+$string['course'] = 'Course';
+$string['user'] = 'User';
+$string['duedate_timeclose'] = 'Due date/Close the quiz';
+$string['assign_quiz_name'] = 'Name of the assignment/quiz';
