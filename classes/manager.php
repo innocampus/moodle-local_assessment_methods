@@ -149,28 +149,9 @@ class manager {
         $renderer = $PAGE->get_renderer('local_assessment_methods');
 
         $data = [];
-        $data2 = [];
-        $data3 = [];
-        //TODO fill $data
+        //TODO fill $data DONE by Christian Gillen
 
-        $data = $DB->get_records_sql('  SELECT am.id as amid, a.duedate as over, cm.id as cmid, cm.module as cmmod, a.name as name, am.method, c.id as cid, c.shortname as cname, u.id as uid, u.username as uname
-                                            FROM {local_assessment_methods} am
-                                            JOIN {course_modules} cm ON cm.id = am.cmid
-                                            JOIN {course} c ON c.id = cm.course
-                                            JOIN {assign} a ON a.id = cm.instance
-                                            JOIN {user} u ON u.id = am.userid
-                                            WHERE cm.module = 1');
-
-        $data2 = $DB->get_records_sql(' SELECT am.id as amid, q.timeclose as over, cm.id as cmid, cm.module as cmmod, q.name as name, am.method, c.id as cid, c.shortname as cname, u.id as uid, u.username as uname
-                                            FROM {local_assessment_methods} am
-                                            JOIN {course_modules} cm ON cm.id = am.cmid
-                                            JOIN {course} c ON c.id = cm.course
-                                            JOIN {quiz} q ON q.id = cm.instance
-                                            JOIN {user} u ON u.id = am.userid
-                                            WHERE cm.module = 23');
-
-
-        $data3 = $DB->get_records_sql(' SELECT am.id as amid, a.duedate as over, cm.id as cmid, cm.module as cmmod, a.name as name, am.method as method, c.id as cid, c.shortname as cname, u.id as uid, u.username as uname
+        $data = $DB->get_records_sql(' SELECT am.id as amid, a.duedate as over, cm.id as cmid, cm.module as cmmod, a.name as name, am.method as method, c.id as cid, c.shortname as cname, u.id as uid, u.username as uname
                                             FROM {local_assessment_methods} am
                                             JOIN {course_modules} cm ON cm.id = am.cmid
                                             JOIN {course} c ON c.id = cm.course
@@ -186,27 +167,7 @@ class manager {
                                             JOIN {user} u ON u.id = am.userid
                                             WHERE cm.module = 23');
 
-
-        //var_dump($data);
-        //var_dump($data2);
-        //var_dump($data3);
-
-
-        /*if (is_array($data) || is_object($data)) {
-            foreach ($data as $piece) {
-                echo $piece;
-            }
-        }*/
-
         echo $renderer->render(new output\report($data));
-
-        echo $renderer->render(new output\report($data2));
-
-        echo $renderer->render(new output\report($data3));
-
-
-        echo "<br><br><br>Hello World!";
-
         echo $OUTPUT->footer();
     }
 

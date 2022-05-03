@@ -36,7 +36,7 @@ defined('MOODLE_INTERNAL') || die();
  * @property-read \stdClass $data
  */
 class report implements \renderable {
-    //TODO make this work!
+    //TODO make this work! DONE by Christian Gillen
 
     /** @var array $data */
     private $data;
@@ -64,8 +64,6 @@ class report implements \renderable {
 
     private function create_table_row($row_id): ?\html_table_row
     {
-        //echo nl2br("PAUSE \n");
-
         // from unix time stamp to a readable date and time format
         $date = $this->data[$row_id]->over;
         $this->data[$row_id]->over = userdate($date);
@@ -83,10 +81,11 @@ class report implements \renderable {
         $this->data[$row_id]->name = \html_writer::link($url, $name);
 
         // from the method code word to the respective translation
-        //$method = $this->data[$row_id]->method;
-        //$this->data[$row_id]->method = helper::get_methods();
+        $selected = $this->data[$row_id]->method;
+        $this->data[$row_id]->method = helper::get_method_options($selected, null)[$selected];
 
-        //var_dump($this->data[$row_id]->method);
+        // var_dump($this->data[$row_id]->method);
+
 
         // from course id to the relative course URL
         $id = $this->data[$row_id]->cid;

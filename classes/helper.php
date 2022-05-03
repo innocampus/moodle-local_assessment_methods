@@ -106,7 +106,6 @@ class helper {
         return new moodle_url(self::PLUGIN_PATH . 'index.php', $params);
     }
 
-    //TODO user URL DONE
     /**
      * @param string $userid
      * @return moodle_url
@@ -116,7 +115,6 @@ class helper {
         return new moodle_url('/user/profile.php?id=' . $userid);
     }
 
-    //TODO course URL DONE
     /**
      * @param string $courseid
      * @return moodle_url
@@ -126,7 +124,6 @@ class helper {
         return new moodle_url('/course/view.php?id=' . $courseid);
     }
 
-    //TODO assign/quiz URL DONE
     /**
      * @param string $cmid
      * @param string $cmmodule
