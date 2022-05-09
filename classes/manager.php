@@ -151,21 +151,23 @@ class manager {
         $data = [];
         //TODO fill $data DONE by Christian Gillen
 
-        $data = $DB->get_records_sql(' SELECT am.id as amid, a.duedate as over, cm.id as cmid, cm.module as cmmod, a.name as name, am.method as method, c.id as cid, c.shortname as cname, u.id as uid, u.username as uname
+        $common_fields = 'am.id as amid, cm.module as cmid, m.name as modname, am.method as method, c.id as cid, c.shortname as cname, u.id as uid, u.firstname as fname, u.lastname as lname, u.alternatename as aname';
+        $data = $DB->get_records_sql("SELECT ${common_fields}, a.duedate as over, a.name as name
                                             FROM {local_assessment_methods} am
                                             JOIN {course_modules} cm ON cm.id = am.cmid
                                             JOIN {course} c ON c.id = cm.course
-                                            JOIN {assign} a ON a.id = cm.instance
+                                            JOIN {modules} m ON m.id = cm.module
                                             JOIN {user} u ON u.id = am.userid
-                                            WHERE cm.module = 1
-                                            UNION
-                                            SELECT am.id as amid, q.timeclose as over, cm.id as cmid, cm.module as cmmod, q.name as name, am.method as method, c.id as cid, c.shortname as cname, u.id as uid, u.username as uname
+                                            JOIN {assign} a ON a.id = cm.instance
+                                            WHERE m.name = 'assign'
+                                      UNION SELECT ${common_fields}, q.timeclose as over, q.name as name
                                             FROM {local_assessment_methods} am
                                             JOIN {course_modules} cm ON cm.id = am.cmid
                                             JOIN {course} c ON c.id = cm.course
+                                            JOIN {modules} m ON m.id = cm.module
                                             JOIN {quiz} q ON q.id = cm.instance
                                             JOIN {user} u ON u.id = am.userid
-                                            WHERE cm.module = 23');
+                                            WHERE m.name = 'quiz'");
 
         echo $renderer->render(new output\report($data));
         echo $OUTPUT->footer();

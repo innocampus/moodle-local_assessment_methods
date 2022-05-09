@@ -59,49 +59,42 @@ class report implements \renderable {
     }
 
     private function create_table_header(): array {
-        return array(get_string('method_id', 'local_assessment_methods'), get_string('duedate_timeclose', 'local_assessment_methods'), get_string('assign_quiz_name', 'local_assessment_methods'), get_string('assessment_method', 'local_assessment_methods'), get_string('course', 'local_assessment_methods'), get_string('user', 'local_assessment_methods'));
+        return array(
+            helper::get_string('assign_quiz_name'),
+            helper::get_string('assessment_method'),
+            helper::get_string('method_id'),
+            helper::get_string('duedate_timeclose'),
+            helper::get_string('course'),
+            helper::get_string('user')
+        );
     }
 
     private function create_table_row($row_id): ?\html_table_row
     {
+        $data = $this->data[$row_id];
         // from unix time stamp to a readable date and time format
-        $date = $this->data[$row_id]->over;
-        $this->data[$row_id]->over = userdate($date);
+        $date = userdate($data->over);
 
-        /*
-         * from course module id and course module module to the relative
-         * assign or quiz URL
-         */
-        $id = $this->data[$row_id]->cmid;
-        $mod = $this->data[$row_id]->cmmod;
-        unset($this->data[$row_id]->cmid);
-        unset($this->data[$row_id]->cmmod);
-        $name = $this->data[$row_id]->name;
-        $url = helper::get_assquiz_url($id, $mod);
-        $this->data[$row_id]->name = \html_writer::link($url, $name);
+        // from course module id and course module module to the relative assign or quiz URL
+        $url = helper::get_assquiz_url($data->cmid, $data->modname);
+        $name = \html_writer::link($url, $data->name);
 
         // from the method code word to the respective translation
-        $selected = $this->data[$row_id]->method;
-        $this->data[$row_id]->method = helper::get_method_options($selected, null)[$selected];
-
-        // var_dump($this->data[$row_id]->method);
-
+        $method = helper::get_method_options($data->method, null)[$data->method];
 
         // from course id to the relative course URL
-        $id = $this->data[$row_id]->cid;
-        unset($this->data[$row_id]->cid);
-        $name = $this->data[$row_id]->cname;
-        $url = helper::get_course_url($id);
-        $this->data[$row_id]->cname = \html_writer::link($url, $name);
+        $url = helper::get_course_url($data->cid);
+        $course = \html_writer::link($url, $data->cname);
 
-        // from user id to the relative user URL
-        $id = $this->data[$row_id]->uid;
-        unset($this->data[$row_id]->uid);
-        $name = $this->data[$row_id]->uname;
-        $url = helper::get_user_url($id);
-        $this->data[$row_id]->uname = \html_writer::link($url, $name);
+        // from user names to the relative user URL
+        $url = helper::get_user_url($data->uid);
+        $fullname = $data->aname ?: $data->fname . ' ' . $data->lname;
+        $user = \html_writer::link($url, $fullname);
 
-        $table_row = new \html_table_row((array)$this->data[$row_id]);
+        // make the row
+        $table_row = new \html_table_row([
+            $name, $method, $data->method, $date, $course, $user
+        ]);
 
         return $table_row;
     }

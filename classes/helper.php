@@ -130,14 +130,19 @@ class helper {
      * @return moodle_url
      * @throws moodle_exception
      */
-    public static function get_assquiz_url(string $cmid, $cmmodule): moodle_url {
+    public static function get_assquiz_url(string $cmid, $module): moodle_url {
         $url = null;
-        if ($cmmodule == '1') {
-            $url = new moodle_url('/mod/assign/view.php?id=' . $cmid);
+        switch ($module) {
+            case 'quiz':
+                $url = new moodle_url('/mod/quiz/view.php?id=' . $cmid);
+                break;
+            case 'assign':
+                $url = new moodle_url('/mod/assign/view.php?id=' . $cmid);
+                break;
+            default:
+                $url = self::get_report_url();
         }
-        elseif ($cmmodule == '23') {
-            $url = new moodle_url('/mod/quiz/view.php?id=' . $cmid);
-        }
+
         return $url;
     }
 
