@@ -24,13 +24,14 @@
 
 namespace local_assessment_methods\output;
 
+use local_assessment_methods\helper;
 use coding_exception;
 use html_writer;
 use moodle_exception;
 
 defined('MOODLE_INTERNAL') || die();
 
-class renderer extends \renderer_base {
+class renderer extends \plugin_renderer_base {
 
     /**
      * @return string
@@ -39,8 +40,7 @@ class renderer extends \renderer_base {
      */
     public function method_link(): string {
         return html_writer::link(\local_assessment_methods\helper::get_method_add_url(),
-            get_string('create_method_button_text', 'local_assessment_methods'),
-            ['class' => 'btn btn-secondary mb-3']);
+            helper::get_string('create_method_button_text'), ['class' => 'btn btn-secondary mb-3']);
     }
 
     /**
@@ -58,5 +58,25 @@ class renderer extends \renderer_base {
      */
     public function render_report(report $report): string {
         return html_writer::table($report->table());
+    }
+
+    /** @var int Page size for displaying report table. */
+    const REPORT_TABLE_PAGESIZE = 30;
+
+    /**
+     * Return output to be rendered to page
+     *
+     * @param report_table $table
+     * @return string HTML rendered table
+     */
+    protected function render_report_table(report_table $table) {
+        ob_start();
+
+        $table->out(self::REPORT_TABLE_PAGESIZE, false);
+        $output = ob_get_contents();
+
+        ob_end_clean();
+
+        return $output;
     }
 }

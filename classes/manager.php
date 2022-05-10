@@ -24,17 +24,25 @@
 
 namespace local_assessment_methods;
 
+use cache;
+use cache_session;
+use cache_store;
 use coding_exception;
 use core\update\checker_exception;
 use dml_exception;
 use moodle_exception;
 use context_system;
 use moodle_url;
+use local_assessment_methods\helper;
+use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
 
+//require(__DIR__.'/../../../config.php');
 require_once($CFG->libdir . '/formslib.php');
+require_once($CFG->libdir . '/adminlib.php');
+
 
 class manager {
 
@@ -75,6 +83,7 @@ class manager {
             default:
                 require_capability('local/assessment_methods:view_report', $context);
                 self::make_page_header($action);
+                //self::process_search($action);
                 self::show_report();
         }
     }
@@ -105,21 +114,34 @@ class manager {
                 if ($method) {
                     $url->param('method', $method);
                 }
+                // Test by CG
+                $PAGE->set_title($title);
+                $PAGE->set_url($url);
+                echo $OUTPUT->header();
                 break;
             case self::ACTION_VIEW_ADMIN_PAGE:
                 $title = helper::get_string('assessment_method_list');
+                // Test by CG
+                $PAGE->set_title($title);
+                $PAGE->set_url($url);
+                echo $OUTPUT->header();
                 break;
             case self::ACTION_VIEW_REPORT:
-                $title = helper::get_string('report');
-                break;
             default:
-                throw new \moodle_exception('unknown_action', 'local_assessment_methods');
+                $title = helper::get_string('report');
+                // Test by CG
+                $PAGE->set_title($title);
+                $PAGE->set_url($url);
+                echo $OUTPUT->header();
+                break;
+            /*default:
+                throw new \moodle_exception('unknown_action', 'local_assessment_methods');*/
         }
 
-        $PAGE->set_title($title);
-        $PAGE->set_url($url);
-
-        echo $OUTPUT->header();
+        // commented out by CG for testing purposes
+        //$PAGE->set_title($title);
+        //$PAGE->set_url($url);
+        //echo $OUTPUT->header();
     }
 
     /**
@@ -142,35 +164,138 @@ class manager {
         echo $OUTPUT->footer();
     }
 
+/*    private static function get_data_from_db(): array {
+        global $DB;
+
+        $common_fields = 'am.id as amid, cm.id as cmid, m.name as modname, am.method as method, am.method as method_id,
+                            c.id as cid, c.shortname as cname, u.id as uid, u.firstname as fname, u.lastname as lname, 
+                            u.alternatename as aname, ';
+        $fields = $common_fields . "CASE m.name
+                                        WHEN 'quiz' THEN q.timeclose
+                                        WHEN 'assign' THEN a.duedate
+                                    END as over,
+                                    CASE m.name
+                                        WHEN 'quiz' THEN q.name
+                                        WHEN 'assign' THEN a.name
+                                    END as name";
+        $from = '{local_assessment_methods} am
+                 JOIN {course_modules} cm ON cm.id = am.cmid
+                 JOIN {course} c ON c.id = cm.course
+                 JOIN {modules} m ON m.id = cm.module
+                 JOIN {user} u ON u.id = am.userid
+                 FULL JOIN {assign} a ON a.id = cm.instance
+                 FULL JOIN {quiz} q ON q.id = cm.instance';
+        $where = "1=1";
+        //TODO fill $data DONE by Christian Gillen
+        $data = $DB->get_records_sql("SELECT ${fields}
+                                            FROM ${from}
+                                            WHERE ${where}");
+        return $data;
+    }*/
+
+/*    private static function build_and_render_table($data) {
+        global $PAGE, $OUTPUT;
+        $renderer = $PAGE->get_renderer('local_assessment_methods');
+        $table = new output\report($data);
+        if (!$table->is_empty()) {
+            // the table filled with data before is rendered
+            echo $renderer->render($table);
+        } else {
+            echo $OUTPUT->notification(helper::get_string('report_table_empty_notice'), 'info');
+        }
+    }*/
+
     private static function show_report() {
-        global $PAGE, $OUTPUT, $DB;
+        global $PAGE, $OUTPUT;
 
         /** @var output\renderer $renderer */
         $renderer = $PAGE->get_renderer('local_assessment_methods');
 
-        $data = [];
-        //TODO fill $data DONE by Christian Gillen
+        //TODO fill $data DONE by Christian Gillen with helper function right above
+        //self::build_and_render_table(self::get_data_from_db());
 
-        $common_fields = 'am.id as amid, cm.module as cmid, m.name as modname, am.method as method, c.id as cid, c.shortname as cname, u.id as uid, u.firstname as fname, u.lastname as lname, u.alternatename as aname';
-        $data = $DB->get_records_sql("SELECT ${common_fields}, a.duedate as over, a.name as name
-                                            FROM {local_assessment_methods} am
-                                            JOIN {course_modules} cm ON cm.id = am.cmid
-                                            JOIN {course} c ON c.id = cm.course
-                                            JOIN {modules} m ON m.id = cm.module
-                                            JOIN {user} u ON u.id = am.userid
-                                            JOIN {assign} a ON a.id = cm.instance
-                                            WHERE m.name = 'assign'
-                                      UNION SELECT ${common_fields}, q.timeclose as over, q.name as name
-                                            FROM {local_assessment_methods} am
-                                            JOIN {course_modules} cm ON cm.id = am.cmid
-                                            JOIN {course} c ON c.id = cm.course
-                                            JOIN {modules} m ON m.id = cm.module
-                                            JOIN {quiz} q ON q.id = cm.instance
-                                            JOIN {user} u ON u.id = am.userid
-                                            WHERE m.name = 'quiz'");
+        $search = optional_param('search', '', PARAM_TEXT);
+        //admin_externalpage_setup('assessment_methods', '', ['search' => $search], '', ['pagelayout' => 'report']);
 
-        echo $renderer->render(new output\report($data));
-        echo $OUTPUT->footer();
+        $mform = new form\search();
+        /*if ($mform->is_cancelled()) {
+            redirect(helper::get_report_url());
+            //self::execute(self::ACTION_VIEW_ADMIN_PAGE);
+            //self::show_report();
+            //redirect(helper::get_admin_setting_url());
+        }*/
+        /*else {
+            redirect(helper::get_admin_setting_url());
+        }*/
+
+        echo $OUTPUT->heading(helper::get_string('pluginname'));
+
+        /** @var cache_session $cache */
+        $cache = cache::make_from_params(cache_store::MODE_SESSION, 'assessment_methods', 'search');
+
+        if (!empty($search)) {
+            $searchdata = (object) ['setting' => $search];
+        } else {
+            $searchdata = $cache->get('data');
+        }
+
+        $mform->set_data($searchdata);
+
+        $searchclauses = [];
+
+        if ($mform->is_cancelled()) {
+            redirect(helper::get_report_url());
+        }
+
+        $data = ($mform->is_submitted() ? $mform->get_data() : fullclone($searchdata));
+        if ($data instanceof stdClass) {
+            if (!empty($data->assessment_methods)) {
+                $searchclauses[] = "assessment_methods:{$data->assessment_methods}";
+            }
+            if (!empty($data->activities)) {
+                if ($data->activities == "1") {
+                    $searchclauses[] = "assign";
+                } else {
+                    $searchclauses[] = "quiz";
+                }
+            }
+            if (!empty($data->datefrom)) {
+                $searchclauses[] = "datefrom:{$data->datefrom}";
+            }
+            if (!empty($data->dateto)) {
+                $dateto = $data->dateto + DAYSECS - 1;
+                $searchclauses[] = "dateto:{$dateto}";
+            }
+            if (!empty($data->course)) {
+                $searchclauses[] = $data->course;
+            }
+            if (!empty($data->user)) {
+                $searchclauses[] = "user:{$data->user}";
+            }
+            unset($data->submitbutton);
+            $cache->set('data', $data);
+        }
+
+        $mform->display();
+
+        $table = new output\report_table(implode(' ', $searchclauses));
+
+        if (!$table->is_downloading()) {
+            // Only print headers if not asked to download data.
+            // Print the page header.
+            $PAGE->set_title(helper::get_string('pluginname'));
+            $PAGE->set_heading(helper::get_string('pluginname'));
+            $PAGE->navbar->add(helper::get_string('pluginname'), new moodle_url('/index.php'));
+            //echo $OUTPUT->header();
+        }
+
+        $table->define_baseurl($PAGE->url);
+
+        echo $renderer->render($table);
+
+        if (!$table->is_downloading()) {
+            echo $OUTPUT->footer();
+        }
     }
 
     /**

@@ -20,6 +20,25 @@ $string['report'] = 'Bericht';
 $string['please_select'] = 'Bitte wählen Sie eine Option...';
 
 $string['course'] = 'Kurs';
+$string['course_help'] = 'Kurzen Kursnamen eingeben';
 $string['user'] = 'Nutzer/-in';
+$string['user_help'] = 'Nutzer/in nach Vor- oder Nachnamen suchen';
 $string['duedate_timeclose'] = 'Fälligkeitsdatum/Testschließung';
 $string['assign_quiz_name'] = 'Name der Aufgabe/des Tests';
+$string['activities'] = 'Aktivitäten';
+$string['activities_help'] = '"assign" für Aufgaben oder "quiz" für Tests eingeben';
+$string['assign'] = 'Aufgabe';
+$string['quiz'] = 'Test';
+$string['assign_quiz'] = 'Aufgabe und Test';
+$string['assessment_methods'] = 'Prüfungsformate';
+$string['all_assessment_methods'] = 'Alle Prüfungsformate';
+$string['datefrom'] = 'Von';
+$string['dateto'] = 'Bis';
+$string['search'] = 'Suchen';
+$string['methods'] = 'Formate';
+$string['choose_methods'] = 'Bitte wählen Sie alle zu berücksichtigenden Formate aus.';
+$string['report_table_empty_notice'] = 'Es gibt noch keine auszugebenden Prüfungsformate.';
+$string['usernone'] = 'CLI oder Installation';
+
+
+

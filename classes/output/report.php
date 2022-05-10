@@ -24,25 +24,31 @@
 
 namespace local_assessment_methods\output;
 
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->libdir . '/searchlib.php');
+require_once($CFG->libdir . '/tablelib.php');
+
 use html_table;
+use local_assessment_methods\form\search;
 use local_assessment_methods\helper;
 use moodle_page;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
- * Class renderer
+ * Class report
  * @package local_assessment_methods\output
  * @property-read \stdClass $data
  */
-class report implements \renderable {
+class report extends \table_sql implements \renderable {
     //TODO make this work! DONE by Christian Gillen
 
     /** @var array $data */
     private $data;
 
     function __construct(array $data) {
+        parent::__construct('local-assessment-methods-report');
         $this->data = $data;
+        $this->sortable(true, 'duedate_timeclose', SORT_ASC);
     }
 
     /**
@@ -58,6 +64,10 @@ class report implements \renderable {
         return $table;
     }
 
+    public function is_empty(): bool {
+        return empty($this->data);
+    }
+
     private function create_table_header(): array {
         return array(
             helper::get_string('assign_quiz_name'),
@@ -69,8 +79,7 @@ class report implements \renderable {
         );
     }
 
-    private function create_table_row($row_id): ?\html_table_row
-    {
+    private function create_table_row($row_id): ?\html_table_row {
         $data = $this->data[$row_id];
         // from unix time stamp to a readable date and time format
         $date = userdate($data->over);
@@ -100,7 +109,7 @@ class report implements \renderable {
     }
 
     static function filter_form(): ?\moodleform {
-        return null;
+        return new search();
     }
 
     static function quiz_svg(): string {

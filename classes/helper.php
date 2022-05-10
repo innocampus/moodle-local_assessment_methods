@@ -142,7 +142,6 @@ class helper {
             default:
                 $url = self::get_report_url();
         }
-
         return $url;
     }
 
