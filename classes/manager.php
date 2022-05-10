@@ -151,7 +151,7 @@ class manager {
         $data = [];
         //TODO fill $data DONE by Christian Gillen
 
-        $common_fields = 'am.id as amid, cm.module as cmid, m.name as modname, am.method as method, c.id as cid, c.shortname as cname, u.id as uid, u.firstname as fname, u.lastname as lname, u.alternatename as aname';
+        $common_fields = 'am.id as amid, cm.id as cmid, m.name as modname, am.method as method, c.id as cid, c.shortname as cname, u.id as uid, u.firstname as fname, u.lastname as lname, u.alternatename as aname';
         $data = $DB->get_records_sql("SELECT ${common_fields}, a.duedate as over, a.name as name
                                             FROM {local_assessment_methods} am
                                             JOIN {course_modules} cm ON cm.id = am.cmid
