@@ -30,6 +30,7 @@ use dml_exception;
 use moodle_exception;
 use context_system;
 use moodle_url;
+use local_assessment_methods\helper;
 
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
@@ -168,8 +169,14 @@ class manager {
                                             JOIN {quiz} q ON q.id = cm.instance
                                             JOIN {user} u ON u.id = am.userid
                                             WHERE m.name = 'quiz'");
+        
+        if (empty($data)) {
+            echo helper::get_string('no_am_available');
+        }
+        else {
+            echo $renderer->render(new output\report($data));
+        }
 
-        echo $renderer->render(new output\report($data));
         echo $OUTPUT->footer();
     }
 

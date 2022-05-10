@@ -23,3 +23,4 @@ $string['course'] = 'Kurs';
 $string['user'] = 'Nutzer/-in';
 $string['duedate_timeclose'] = 'Fälligkeitsdatum/Testschließung';
 $string['assign_quiz_name'] = 'Name der Aufgabe/des Tests';
+$string['no_am_available'] = 'Es gibt keine auszugebenden Prüfungsformate.';

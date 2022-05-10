@@ -23,3 +23,4 @@ $string['course'] = 'Course';
 $string['user'] = 'User';
 $string['duedate_timeclose'] = 'Due date/Close the quiz';
 $string['assign_quiz_name'] = 'Name of the assignment/quiz';
+$string['no_am_available'] = 'There are no assessment methods to be shown.';
