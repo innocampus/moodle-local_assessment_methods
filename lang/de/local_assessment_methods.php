@@ -21,6 +21,17 @@ $string['please_select'] = 'Bitte wählen Sie eine Option...';
 
 $string['course'] = 'Kurs';
 $string['user'] = 'Nutzer/-in';
+$string['user_help'] = 'Nutzer/in nach Vor- oder Nachnamen suchen';
 $string['duedate_timeclose'] = 'Fälligkeitsdatum/Testschließung';
 $string['assign_quiz_name'] = 'Name der Aufgabe/des Tests';
 $string['no_am_available'] = 'Es gibt keine auszugebenden Prüfungsformate.';
+$string['activities'] = 'Aktivitäten';
+$string['assign'] = 'Aufgabe';
+$string['quiz'] = 'Test';
+$string['assign_quiz'] = 'Aufgabe und Test';
+$string['assessment_methods'] = 'Prüfungsformate';
+$string['datefrom'] = 'Von';
+$string['dateto'] = 'Bis';
+$string['search'] = 'Suchen';
+$string['methods'] = 'Formate';
+

@@ -21,6 +21,17 @@ $string['please_select'] = 'Please select an option...';
 
 $string['course'] = 'Course';
 $string['user'] = 'User';
+$string['user_help'] = 'Search by user first name or last name';
 $string['duedate_timeclose'] = 'Due date/Close the quiz';
 $string['assign_quiz_name'] = 'Name of the assignment/quiz';
 $string['no_am_available'] = 'There are no assessment methods to be shown.';
+$string['activities'] = 'Activities';
+$string['assign'] = 'Assignment';
+$string['quiz'] = 'Quiz';
+$string['assign_quiz'] = 'Assignment and quiz';
+$string['assessment_methods'] = 'Assessment methods';
+$string['datefrom'] = 'From';
+$string['dateto'] = 'To';
+$string['search'] = 'Search';
+$string['methods'] = 'Methods';
+

@@ -169,7 +169,24 @@ class manager {
                                             JOIN {quiz} q ON q.id = cm.instance
                                             JOIN {user} u ON u.id = am.userid
                                             WHERE m.name = 'quiz'");
-        
+
+        //var_dump($data);
+
+        echo "Hello World!";
+
+        $mform = output\report::filter_form();
+        //$mform = new form\search();
+        $mform->set_data($data);
+
+        var_dump($mform->get_data());
+
+        echo "Moin Welt!";
+
+
+        var_dump($mform->is_submitted());
+
+        $mform->display();
+
         if (empty($data)) {
             echo helper::get_string('no_am_available');
         }

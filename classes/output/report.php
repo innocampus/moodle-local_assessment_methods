@@ -25,13 +25,14 @@
 namespace local_assessment_methods\output;
 
 use html_table;
+use local_assessment_methods\form\search;
 use local_assessment_methods\helper;
 use moodle_page;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Class renderer
+ * Class report
  * @package local_assessment_methods\output
  * @property-read \stdClass $data
  */
@@ -100,7 +101,7 @@ class report implements \renderable {
     }
 
     static function filter_form(): ?\moodleform {
-        return null;
+        return new search();
     }
 
     static function quiz_svg(): string {
