@@ -24,7 +24,6 @@ $string['user'] = 'Nutzer/-in';
 $string['user_help'] = 'Nutzer/in nach Vor- oder Nachnamen suchen';
 $string['duedate_timeclose'] = 'Fälligkeitsdatum/Testschließung';
 $string['assign_quiz_name'] = 'Name der Aufgabe/des Tests';
-$string['no_am_available'] = 'Es gibt keine auszugebenden Prüfungsformate.';
 $string['activities'] = 'Aktivitäten';
 $string['assign'] = 'Aufgabe';
 $string['quiz'] = 'Test';
@@ -34,4 +33,9 @@ $string['datefrom'] = 'Von';
 $string['dateto'] = 'Bis';
 $string['search'] = 'Suchen';
 $string['methods'] = 'Formate';
+$string['choose_methods'] = 'Bitte wählen Sie alle zu berücksichtigenden Formate aus.';
+$string['report_table_empty_notice'] = 'Es gibt noch keine auszugebenden Prüfungsformate.';
+$string['usernone'] = 'CLI oder Installation';
+
+
 

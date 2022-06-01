@@ -24,6 +24,9 @@
 
 namespace local_assessment_methods;
 
+use cache;
+use cache_session;
+use cache_store;
 use coding_exception;
 use core\update\checker_exception;
 use dml_exception;
@@ -31,11 +34,15 @@ use moodle_exception;
 use context_system;
 use moodle_url;
 use local_assessment_methods\helper;
+use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
 
+//require(__DIR__.'/../../../config.php');
 require_once($CFG->libdir . '/formslib.php');
+require_once($CFG->libdir . '/adminlib.php');
+
 
 class manager {
 
@@ -76,6 +83,7 @@ class manager {
             default:
                 require_capability('local/assessment_methods:view_report', $context);
                 self::make_page_header($action);
+                //self::process_search($action);
                 self::show_report();
         }
     }
@@ -106,21 +114,33 @@ class manager {
                 if ($method) {
                     $url->param('method', $method);
                 }
+                // Test by CG
+                $PAGE->set_title($title);
+                $PAGE->set_url($url);
+                echo $OUTPUT->header();
                 break;
             case self::ACTION_VIEW_ADMIN_PAGE:
                 $title = helper::get_string('assessment_method_list');
+                // Test by CG
+                $PAGE->set_title($title);
+                $PAGE->set_url($url);
+                echo $OUTPUT->header();
                 break;
             case self::ACTION_VIEW_REPORT:
                 $title = helper::get_string('report');
+                // Test by CG
+                $PAGE->set_title($title);
+                $PAGE->set_url($url);
+                echo $OUTPUT->header();
                 break;
             default:
                 throw new \moodle_exception('unknown_action', 'local_assessment_methods');
         }
 
-        $PAGE->set_title($title);
-        $PAGE->set_url($url);
-
-        echo $OUTPUT->header();
+        // commented out by CG for testing purposes
+        //$PAGE->set_title($title);
+        //$PAGE->set_url($url);
+        //echo $OUTPUT->header();
     }
 
     /**
@@ -143,59 +163,225 @@ class manager {
         echo $OUTPUT->footer();
     }
 
+/*    private static function get_data_from_db(): array {
+        global $DB;
+
+        $common_fields = 'am.id as amid, cm.id as cmid, m.name as modname, am.method as method, am.method as method_id,
+                            c.id as cid, c.shortname as cname, u.id as uid, u.firstname as fname, u.lastname as lname, 
+                            u.alternatename as aname, ';
+        $fields = $common_fields . "CASE m.name
+                                        WHEN 'quiz' THEN q.timeclose
+                                        WHEN 'assign' THEN a.duedate
+                                    END as over,
+                                    CASE m.name
+                                        WHEN 'quiz' THEN q.name
+                                        WHEN 'assign' THEN a.name
+                                    END as name";
+        $from = '{local_assessment_methods} am
+                 JOIN {course_modules} cm ON cm.id = am.cmid
+                 JOIN {course} c ON c.id = cm.course
+                 JOIN {modules} m ON m.id = cm.module
+                 JOIN {user} u ON u.id = am.userid
+                 FULL JOIN {assign} a ON a.id = cm.instance
+                 FULL JOIN {quiz} q ON q.id = cm.instance';
+        $where = "1=1";
+        //TODO fill $data DONE by Christian Gillen
+        $data = $DB->get_records_sql("SELECT ${fields}
+                                            FROM ${from}
+                                            WHERE ${where}");
+        return $data;
+    }*/
+
+/*    private static function build_and_render_table($data) {
+        global $PAGE, $OUTPUT;
+        $renderer = $PAGE->get_renderer('local_assessment_methods');
+        $table = new output\report($data);
+        if (!$table->is_empty()) {
+            // the table filled with data before is rendered
+            echo $renderer->render($table);
+        } else {
+            echo $OUTPUT->notification(helper::get_string('report_table_empty_notice'), 'info');
+        }
+    }*/
+
     private static function show_report() {
-        global $PAGE, $OUTPUT, $DB;
+        global $PAGE, $OUTPUT;
 
         /** @var output\renderer $renderer */
         $renderer = $PAGE->get_renderer('local_assessment_methods');
 
-        $data = [];
-        //TODO fill $data DONE by Christian Gillen
+        //TODO fill $data DONE by Christian Gillen with helper function right above
+        //self::build_and_render_table(self::get_data_from_db());
 
-        $common_fields = 'am.id as amid, cm.id as cmid, m.name as modname, am.method as method, c.id as cid, c.shortname as cname, u.id as uid, u.firstname as fname, u.lastname as lname, u.alternatename as aname';
-        $data = $DB->get_records_sql("SELECT ${common_fields}, a.duedate as over, a.name as name
-                                            FROM {local_assessment_methods} am
-                                            JOIN {course_modules} cm ON cm.id = am.cmid
-                                            JOIN {course} c ON c.id = cm.course
-                                            JOIN {modules} m ON m.id = cm.module
-                                            JOIN {user} u ON u.id = am.userid
-                                            JOIN {assign} a ON a.id = cm.instance
-                                            WHERE m.name = 'assign'
-                                      UNION SELECT ${common_fields}, q.timeclose as over, q.name as name
-                                            FROM {local_assessment_methods} am
-                                            JOIN {course_modules} cm ON cm.id = am.cmid
-                                            JOIN {course} c ON c.id = cm.course
-                                            JOIN {modules} m ON m.id = cm.module
-                                            JOIN {quiz} q ON q.id = cm.instance
-                                            JOIN {user} u ON u.id = am.userid
-                                            WHERE m.name = 'quiz'");
+        $search = optional_param('search', '', PARAM_TEXT);
+        //admin_externalpage_setup('assessment_methods', '', ['search' => $search], '', ['pagelayout' => 'report']);
 
-        //var_dump($data);
+        $mform = new form\search();
+        if ($mform->is_cancelled()) {
+            redirect(helper::get_admin_setting_url());
+        }
+        /*else {
+            redirect(helper::get_admin_setting_url());
+        }*/
 
+        echo $OUTPUT->heading(helper::get_string('pluginname'));
+
+        /** @var cache_session $cache */
+        $cache = cache::make_from_params(cache_store::MODE_SESSION, 'assessment_methods', 'search');
+
+        if (!empty($search)) {
+            $searchdata = (object) ['setting' => $search];
+        } else {
+            $searchdata = $cache->get('data');
+        }
+
+        var_dump($search);
         echo "Hello World!";
+        var_dump($searchdata);
 
-        $mform = output\report::filter_form();
-        //$mform = new form\search();
-        $mform->set_data($data);
 
-        var_dump($mform->get_data());
+        //$mform->set_data($searchdata);
 
+        $searchclauses = [];
+
+        if ($mform->is_cancelled()) {
+            redirect(helper::get_admin_setting_url());
+        } else if ($data = $mform->get_data()) {
+            if ($data instanceof stdClass) {
+                if (!empty($data->assign_quiz_name)) {
+                    $searchclauses[] = "assign_quiz_name:{$data->assign_quiz_name}";
+                }
+                if (!empty($data->method_id)) {
+                    $searchclauses[] = "method_id:{$data->method_id}";
+                }
+                if (!empty($data->datefrom)) {
+                    $searchclauses[] = "datefrom:{$data->datefrom}";
+                }
+                if (!empty($data->dateto)) {
+                    $dateto = $data->dateto + DAYSECS - 1;
+                    $searchclauses[] = "dateto:{$dateto}";
+                }
+                if (!empty($data->course)) {
+                    $searchclauses[] = "course:{$data->course}";
+                }
+                if (!empty($data->user)) {
+                    $searchclauses[] = "user:{$data->user}";
+                }
+            }
+        } else {
+            $mform->set_data($searchdata);
+            $mform->display();
+        }
+
+        // Check if we have a form submission, or a cached submission.
+        //$data = ($mform->is_submitted() ? $mform->get_data() : fullclone($searchdata));
+        /*if ($data instanceof stdClass) {
+            if (!empty($data->activities)) {
+                $searchclauses[] = $data->activities;
+            }
+            if (!empty($data->assessment_methods)) {
+                $searchclauses[] = $data->assessment_methods;
+            }
+            if (!empty($data->datefrom)) {
+                $searchclauses[] = $data->datefrom;
+            }
+            if (!empty($data->dateto)) {
+                $searchclauses[] = $data->dateto + DAYSECS - 1;
+            }
+
+            // Cache form submission so that it is preserved while paging through the report.
+            unset($data->submitbutton);
+            $cache->set('data', $data);
+        }*/
+
+
+        $table = new output\report_table(implode(' ', $searchclauses));
+
+        if (!$table->is_downloading()) {
+            // Only print headers if not asked to download data.
+            // Print the page header.
+            $PAGE->set_title(helper::get_string('pluginname'));
+            $PAGE->set_heading(helper::get_string('pluginname'));
+            $PAGE->navbar->add(helper::get_string('pluginname'), new moodle_url('/index.php'));
+            //echo $OUTPUT->header();
+        }
+
+        $table->define_baseurl($PAGE->url);
+
+        echo $renderer->render($table);
+
+        /*$totable = [];
+        foreach ($data as $datum) {
+            if ((int)$datum->over >= 1652738400 && (int)$datum->over <= 1656194399) {
+                $totable[] = $datum;
+            }
+        }*/
+
+        //var_dump($totable);
         echo "Moin Welt!";
+        //self::build_and_render_table($totable);
 
-
-        var_dump($mform->is_submitted());
-
-        $mform->display();
-
-        if (empty($data)) {
-            echo helper::get_string('no_am_available');
+        if (!$table->is_downloading()) {
+            echo $OUTPUT->footer();
         }
-        else {
-            echo $renderer->render(new output\report($data));
-        }
-
-        echo $OUTPUT->footer();
     }
+
+    /**
+     * @throws moodle_exception
+     */
+/*    private static function process_search($action) {
+        $mform = output\report::filter_form();
+
+        $formfields = [];
+
+        if ($mform->is_cancelled()) {
+            //redirect(new moodle_url('/my/'));
+            redirect(helper::get_report_url());
+        } else if ($formdata = $mform->get_data()) {
+            if ($formdata instanceof stdClass) {
+                if (!empty($formdata->activities)) {
+                    $formfields["modname"] = $formdata->activities;
+                } else {
+                    $formfields["modname"] = "0";
+                }
+                if (!empty($formdata->assessment_methods)) {
+                    $formfields["method"] = $formdata->assessment_methods;
+                } else {
+                    $formfields["method"] = "";
+                }
+                if (!empty($formdata->datefrom)) {
+                    $formfields["datefrom"] = $formdata->datefrom;
+                }
+                if (!empty($formdata->dateto)) {
+                    $dateto = $formdata->dateto + DAYSECS - 1;
+                    $formfields["dateto"] = $dateto;
+                }
+                if (!empty($formdata->course)) {
+                    $formfields["cname"] = $formdata->course;
+                } else {
+                    $formfields["cname"] = "";
+                }
+                if (!empty($formdata->user)) {
+                    $formfields["user"] = $formdata->user;
+                } else {
+                    $formfields["user"] = "";
+                }
+                var_dump($formfields);
+            }
+            $data = self::get_data_from_db();
+            $totable = [];
+            foreach ($data as $datum) {
+                if ((int)$datum->over >= $formdata->datefrom && (int)$datum->over <= $formdata->dateto + DAYSECS - 1) {
+                    $totable[] = $datum;
+                }
+            }
+            self::build_and_render_table($totable);
+            redirect(helper::get_report_url());
+        } else {
+            self::make_page_header($action, null);
+            $mform->display();
+        }
+    }*/
 
     /**
      * @throws moodle_exception
