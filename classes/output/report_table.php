@@ -95,10 +95,11 @@ class report_table extends \table_sql implements \renderable {
                  FULL JOIN {assign} a ON a.id = cm.instance
                  FULL JOIN {quiz} q ON q.id = cm.instance';
         $where = "1=1";
+        $params = [];
 
         if (!empty($this->search)) {
 
-            $searchstring = str_replace(["\\\"", 'setting:'], ["\"", 'subject:'], $this->search);
+            $searchstring = str_replace(["\\\"", 'method_id:'], ["\"", 'subject:'], $this->search);
 
             $parser = new \search_parser();
             $lexer = new \search_lexer($parser);
@@ -106,17 +107,22 @@ class report_table extends \table_sql implements \renderable {
             if ($lexer->parse($searchstring)) {
                 $parsearray = $parser->get_parsed_array();
 
-                // Data fields should contain both value/oldvalue.
-                $datafields = $DB->sql_concat_join("':'", ['modname', 'method']);
+                // Data fields
+                $datafields = $DB->sql_concat_join("':'", ['c.shortname', 'm.name']);
+                $timefields = $DB->sql_concat_join("", ['over']);
 
-                list($where, $params) = search_generate_SQL($parsearray, $datafields, 'method', 'am.userid', 'uid',
-                    'fname', 'lname', 'over', 'amid');
+                list($where, $params) = search_generate_SQL($parsearray, $datafields, 'am.method', 'am.userid', 'u.id',
+                    'u.firstname', 'u.lastname', $timefields, 'amid');
             }
         }
 
-        $this->set_sql($fields, $from, $where);
-        $this->set_count_sql('SELECT COUNT(1) FROM ' . $from . ' WHERE ' . $where);
+        $this->set_sql($fields, $from, $where, $params);
+        $this->set_count_sql('SELECT COUNT(1) FROM ' . $from . ' WHERE ' . $where, $params);
 
+        echo "WHERE";
+        var_dump($where);
+        echo "PARAMS";
+        var_dump($params);
         echo "Report Table!";
 
     }

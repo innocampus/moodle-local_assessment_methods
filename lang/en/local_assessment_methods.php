@@ -25,6 +25,7 @@ $string['user_help'] = 'Search by user first name or last name';
 $string['duedate_timeclose'] = 'Due date/Close the quiz';
 $string['assign_quiz_name'] = 'Name of the assignment/quiz';
 $string['activities'] = 'Activities';
+$string['activities_help'] = 'Enter "assign" for assignments or "quiz" for quizzes';
 $string['assign'] = 'Assignment';
 $string['quiz'] = 'Quiz';
 $string['assign_quiz'] = 'Assignment and quiz';

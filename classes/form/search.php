@@ -50,14 +50,20 @@ class search extends \moodleform {
         // Don't hide any fields by default
         $mform->addElement('header', 'heading',
             helper::get_string('search'));
-        
-        $mform->addElement('text', 'assign_quiz_name',
+
+        /*$mform->addElement('text', 'assign_quiz_name',
             helper::get_string('assign_quiz_name'));
-        $mform->setType('assign_quiz_name', PARAM_TEXT);
+        $mform->setType('assign_quiz_name', PARAM_TEXT);*/
+
+        $mform->addElement('text', 'activities',
+            helper::get_string('activities'));
+        $mform->setType('activities', PARAM_TEXT);
+        $mform->addHelpButton('activities', 'activities', 'local_assessment_methods');
 
         $mform->addElement('text', 'method_id',
             helper::get_string('method_id'));
         $mform->setType('method_id', PARAM_TEXT);
+
 
         // select between assignments & quizzes, assignments only or quizzes only
         /*$mform->addElement('select', 'activities',
@@ -68,6 +74,7 @@ class search extends \moodleform {
                 helper::get_string('quiz')
             )
         );*/
+
 
         // choose all the assessment methods to be taken into account
         /*$methods = helper::get_method_options(helper::get_methods(), null);

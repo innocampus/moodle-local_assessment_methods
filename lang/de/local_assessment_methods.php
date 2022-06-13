@@ -25,6 +25,7 @@ $string['user_help'] = 'Nutzer/in nach Vor- oder Nachnamen suchen';
 $string['duedate_timeclose'] = 'Fälligkeitsdatum/Testschließung';
 $string['assign_quiz_name'] = 'Name der Aufgabe/des Tests';
 $string['activities'] = 'Aktivitäten';
+$string['activities_help'] = '"assign" für Aufgaben oder "quiz" für Tests eingeben';
 $string['assign'] = 'Aufgabe';
 $string['quiz'] = 'Test';
 $string['assign_quiz'] = 'Aufgabe und Test';

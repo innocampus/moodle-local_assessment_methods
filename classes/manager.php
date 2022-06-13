@@ -127,14 +127,15 @@ class manager {
                 echo $OUTPUT->header();
                 break;
             case self::ACTION_VIEW_REPORT:
+            default:
                 $title = helper::get_string('report');
                 // Test by CG
                 $PAGE->set_title($title);
                 $PAGE->set_url($url);
                 echo $OUTPUT->header();
                 break;
-            default:
-                throw new \moodle_exception('unknown_action', 'local_assessment_methods');
+            /*default:
+                throw new \moodle_exception('unknown_action', 'local_assessment_methods');*/
         }
 
         // commented out by CG for testing purposes
@@ -217,9 +218,12 @@ class manager {
         //admin_externalpage_setup('assessment_methods', '', ['search' => $search], '', ['pagelayout' => 'report']);
 
         $mform = new form\search();
-        if ($mform->is_cancelled()) {
-            redirect(helper::get_admin_setting_url());
-        }
+        /*if ($mform->is_cancelled()) {
+            redirect(helper::get_report_url());
+            //self::execute(self::ACTION_VIEW_ADMIN_PAGE);
+            //self::show_report();
+            //redirect(helper::get_admin_setting_url());
+        }*/
         /*else {
             redirect(helper::get_admin_setting_url());
         }*/
@@ -240,38 +244,49 @@ class manager {
         var_dump($searchdata);
 
 
-        //$mform->set_data($searchdata);
+        $mform->set_data($searchdata);
 
         $searchclauses = [];
 
         if ($mform->is_cancelled()) {
-            redirect(helper::get_admin_setting_url());
-        } else if ($data = $mform->get_data()) {
-            if ($data instanceof stdClass) {
-                if (!empty($data->assign_quiz_name)) {
-                    $searchclauses[] = "assign_quiz_name:{$data->assign_quiz_name}";
-                }
-                if (!empty($data->method_id)) {
-                    $searchclauses[] = "method_id:{$data->method_id}";
-                }
-                if (!empty($data->datefrom)) {
-                    $searchclauses[] = "datefrom:{$data->datefrom}";
-                }
-                if (!empty($data->dateto)) {
-                    $dateto = $data->dateto + DAYSECS - 1;
-                    $searchclauses[] = "dateto:{$dateto}";
-                }
-                if (!empty($data->course)) {
-                    $searchclauses[] = "course:{$data->course}";
-                }
-                if (!empty($data->user)) {
-                    $searchclauses[] = "user:{$data->user}";
-                }
-            }
-        } else {
-            $mform->set_data($searchdata);
-            $mform->display();
+            redirect(helper::get_report_url());
         }
+
+        $data = ($mform->is_submitted() ? $mform->get_data() : fullclone($searchdata));
+        //else if ($data = $mform->get_data()) {
+        if ($data instanceof stdClass) {
+            if (!empty($data->assign_quiz_name)) {
+                $searchclauses[] = "assign_quiz_name:{$data->assign_quiz_name}";
+            }
+            if (!empty($data->method_id)) {
+                $searchclauses[] = "method_id:{$data->method_id}";
+                //$searchclauses[] = $data->method_id;
+            }
+            if (!empty($data->activities)) {
+                //$searchclauses[] = "method_id:{$data->activities}";
+                $searchclauses[] = $data->activities;
+            }
+            if (!empty($data->datefrom)) {
+                $searchclauses[] = "datefrom:{$data->datefrom}";
+            }
+            if (!empty($data->dateto)) {
+                $dateto = $data->dateto + DAYSECS - 1;
+                $searchclauses[] = "dateto:{$dateto}";
+            }
+            if (!empty($data->course)) {
+                //$searchclauses[] = "course:{$data->course}";
+                $searchclauses[] = $data->course;
+            }
+            if (!empty($data->user)) {
+                $searchclauses[] = "user:{$data->user}";
+            }
+            unset($data->submitbutton);
+            $cache->set('data', $data);
+        }
+        //redirect(helper::get_report_url());
+
+        $mform->display();
+
 
         // Check if we have a form submission, or a cached submission.
         //$data = ($mform->is_submitted() ? $mform->get_data() : fullclone($searchdata));
