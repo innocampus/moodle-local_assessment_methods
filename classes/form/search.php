@@ -44,7 +44,6 @@ class search extends \moodleform {
      * @return void
      */
     public function definition() {
-        // TODO: Implement definition() method.
         $mform = $this->_form;
 
         // Don't hide any fields by default
@@ -55,37 +54,32 @@ class search extends \moodleform {
             helper::get_string('assign_quiz_name'));
         $mform->setType('assign_quiz_name', PARAM_TEXT);*/
 
-        $mform->addElement('text', 'activities',
+        /*$mform->addElement('text', 'activities',
             helper::get_string('activities'));
         $mform->setType('activities', PARAM_TEXT);
-        $mform->addHelpButton('activities', 'activities', 'local_assessment_methods');
+        $mform->addHelpButton('activities', 'activities', 'local_assessment_methods');*/
 
-        $mform->addElement('text', 'method_id',
-            helper::get_string('method_id'));
-        $mform->setType('method_id', PARAM_TEXT);
-
-
-        // select between assignments & quizzes, assignments only or quizzes only
-        /*$mform->addElement('select', 'activities',
+        // select between assignments & quizzes, assignments only or quizzes only, called activities
+        $mform->addElement('select', 'activities',
             helper::get_string('activities'),
             array(
                 helper::get_string('assign_quiz'),
                 helper::get_string('assign'),
                 helper::get_string('quiz')
             )
-        );*/
-
-
-        // choose all the assessment methods to be taken into account
-        /*$methods = helper::get_method_options(helper::get_methods(), null);
-        $options = array(
-            'multiple' => true,
-            'noselectionstring' => helper::get_string('choose_methods')
         );
-        $mform->addElement('autocomplete', 'assessment_methods',
-            helper::get_string('methods'),
-            $methods,
-            $options);*/
+
+        // select between the different assessment methods
+        $methods = array_merge(array(helper::get_string('all_assessment_methods')),
+            helper::get_method_options(helper::get_methods(), null));
+        $mform->addElement('select', 'assessment_methods',
+            helper::get_string('assessment_methods'),
+            $methods
+        );
+
+        /*$mform->addElement('text', 'method_id',
+            helper::get_string('method_id'));
+        $mform->setType('method_id', PARAM_TEXT);*/
 
         $mform->addElement('date_selector', 'datefrom',
             helper::get_string('datefrom'), ['optional' => true]);
@@ -96,6 +90,7 @@ class search extends \moodleform {
         $mform->addElement('text', 'course',
             helper::get_string('course'));
         $mform->setType('course', PARAM_TEXT);
+        $mform->addHelpButton('course', 'course', 'local_assessment_methods');
 
         $mform->addElement('text', 'user',
             helper::get_string('user'));
@@ -103,7 +98,5 @@ class search extends \moodleform {
         $mform->addHelpButton('user', 'user', 'local_assessment_methods');
 
         $this->add_action_buttons(true, helper::get_string('search'));
-
-
     }
 }

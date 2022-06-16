@@ -92,14 +92,14 @@ class report_table extends \table_sql implements \renderable {
                  JOIN {course} c ON c.id = cm.course
                  JOIN {modules} m ON m.id = cm.module
                  JOIN {user} u ON u.id = am.userid
-                 FULL JOIN {assign} a ON a.id = cm.instance
-                 FULL JOIN {quiz} q ON q.id = cm.instance';
+                 LEFT JOIN {assign} a ON a.id = cm.instance
+                 LEFT JOIN {quiz} q ON q.id = cm.instance';
         $where = "1=1";
         $params = [];
 
         if (!empty($this->search)) {
 
-            $searchstring = str_replace(["\\\"", 'method_id:'], ["\"", 'subject:'], $this->search);
+            $searchstring = str_replace(["\\\"", 'assessment_methods:'], ["\"", 'subject:'], $this->search);
 
             $parser = new \search_parser();
             $lexer = new \search_lexer($parser);
@@ -109,7 +109,8 @@ class report_table extends \table_sql implements \renderable {
 
                 // Data fields
                 $datafields = $DB->sql_concat_join("':'", ['c.shortname', 'm.name']);
-                $timefields = $DB->sql_concat_join("", ['over']);
+                $timefields = $DB->sql_concat_join("':'", ['q.timeclose', 'a.duedate']);
+                
 
                 list($where, $params) = search_generate_SQL($parsearray, $datafields, 'am.method', 'am.userid', 'u.id',
                     'u.firstname', 'u.lastname', $timefields, 'amid');
@@ -118,13 +119,6 @@ class report_table extends \table_sql implements \renderable {
 
         $this->set_sql($fields, $from, $where, $params);
         $this->set_count_sql('SELECT COUNT(1) FROM ' . $from . ' WHERE ' . $where, $params);
-
-        echo "WHERE";
-        var_dump($where);
-        echo "PARAMS";
-        var_dump($params);
-        echo "Report Table!";
-
     }
 
     /**

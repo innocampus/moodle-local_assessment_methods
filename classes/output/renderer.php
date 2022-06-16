@@ -61,7 +61,7 @@ class renderer extends \plugin_renderer_base {
     }
 
     /** @var int Page size for displaying report table. */
-    const REPORT_TABLE_PAGESIZE = 10;
+    const REPORT_TABLE_PAGESIZE = 30;
 
     /**
      * Return output to be rendered to page

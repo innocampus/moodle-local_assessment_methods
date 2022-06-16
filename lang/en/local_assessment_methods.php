@@ -20,6 +20,7 @@ $string['report'] = 'Report';
 $string['please_select'] = 'Please select an option...';
 
 $string['course'] = 'Course';
+$string['course_help'] = 'Enter course short name';
 $string['user'] = 'User';
 $string['user_help'] = 'Search by user first name or last name';
 $string['duedate_timeclose'] = 'Due date/Close the quiz';
@@ -30,6 +31,7 @@ $string['assign'] = 'Assignment';
 $string['quiz'] = 'Quiz';
 $string['assign_quiz'] = 'Assignment and quiz';
 $string['assessment_methods'] = 'Assessment methods';
+$string['all_assessment_methods'] = 'All assessment methods';
 $string['datefrom'] = 'From';
 $string['dateto'] = 'To';
 $string['search'] = 'Search';

@@ -239,11 +239,6 @@ class manager {
             $searchdata = $cache->get('data');
         }
 
-        var_dump($search);
-        echo "Hello World!";
-        var_dump($searchdata);
-
-
         $mform->set_data($searchdata);
 
         $searchclauses = [];
@@ -253,18 +248,16 @@ class manager {
         }
 
         $data = ($mform->is_submitted() ? $mform->get_data() : fullclone($searchdata));
-        //else if ($data = $mform->get_data()) {
         if ($data instanceof stdClass) {
-            if (!empty($data->assign_quiz_name)) {
-                $searchclauses[] = "assign_quiz_name:{$data->assign_quiz_name}";
-            }
-            if (!empty($data->method_id)) {
-                $searchclauses[] = "method_id:{$data->method_id}";
-                //$searchclauses[] = $data->method_id;
+            if (!empty($data->assessment_methods)) {
+                $searchclauses[] = "assessment_methods:{$data->assessment_methods}";
             }
             if (!empty($data->activities)) {
-                //$searchclauses[] = "method_id:{$data->activities}";
-                $searchclauses[] = $data->activities;
+                if ($data->activities == "1") {
+                    $searchclauses[] = "assign";
+                } else {
+                    $searchclauses[] = "quiz";
+                }
             }
             if (!empty($data->datefrom)) {
                 $searchclauses[] = "datefrom:{$data->datefrom}";
@@ -274,7 +267,6 @@ class manager {
                 $searchclauses[] = "dateto:{$dateto}";
             }
             if (!empty($data->course)) {
-                //$searchclauses[] = "course:{$data->course}";
                 $searchclauses[] = $data->course;
             }
             if (!empty($data->user)) {
@@ -283,32 +275,8 @@ class manager {
             unset($data->submitbutton);
             $cache->set('data', $data);
         }
-        //redirect(helper::get_report_url());
 
         $mform->display();
-
-
-        // Check if we have a form submission, or a cached submission.
-        //$data = ($mform->is_submitted() ? $mform->get_data() : fullclone($searchdata));
-        /*if ($data instanceof stdClass) {
-            if (!empty($data->activities)) {
-                $searchclauses[] = $data->activities;
-            }
-            if (!empty($data->assessment_methods)) {
-                $searchclauses[] = $data->assessment_methods;
-            }
-            if (!empty($data->datefrom)) {
-                $searchclauses[] = $data->datefrom;
-            }
-            if (!empty($data->dateto)) {
-                $searchclauses[] = $data->dateto + DAYSECS - 1;
-            }
-
-            // Cache form submission so that it is preserved while paging through the report.
-            unset($data->submitbutton);
-            $cache->set('data', $data);
-        }*/
-
 
         $table = new output\report_table(implode(' ', $searchclauses));
 
@@ -325,78 +293,10 @@ class manager {
 
         echo $renderer->render($table);
 
-        /*$totable = [];
-        foreach ($data as $datum) {
-            if ((int)$datum->over >= 1652738400 && (int)$datum->over <= 1656194399) {
-                $totable[] = $datum;
-            }
-        }*/
-
-        //var_dump($totable);
-        echo "Moin Welt!";
-        //self::build_and_render_table($totable);
-
         if (!$table->is_downloading()) {
             echo $OUTPUT->footer();
         }
     }
-
-    /**
-     * @throws moodle_exception
-     */
-/*    private static function process_search($action) {
-        $mform = output\report::filter_form();
-
-        $formfields = [];
-
-        if ($mform->is_cancelled()) {
-            //redirect(new moodle_url('/my/'));
-            redirect(helper::get_report_url());
-        } else if ($formdata = $mform->get_data()) {
-            if ($formdata instanceof stdClass) {
-                if (!empty($formdata->activities)) {
-                    $formfields["modname"] = $formdata->activities;
-                } else {
-                    $formfields["modname"] = "0";
-                }
-                if (!empty($formdata->assessment_methods)) {
-                    $formfields["method"] = $formdata->assessment_methods;
-                } else {
-                    $formfields["method"] = "";
-                }
-                if (!empty($formdata->datefrom)) {
-                    $formfields["datefrom"] = $formdata->datefrom;
-                }
-                if (!empty($formdata->dateto)) {
-                    $dateto = $formdata->dateto + DAYSECS - 1;
-                    $formfields["dateto"] = $dateto;
-                }
-                if (!empty($formdata->course)) {
-                    $formfields["cname"] = $formdata->course;
-                } else {
-                    $formfields["cname"] = "";
-                }
-                if (!empty($formdata->user)) {
-                    $formfields["user"] = $formdata->user;
-                } else {
-                    $formfields["user"] = "";
-                }
-                var_dump($formfields);
-            }
-            $data = self::get_data_from_db();
-            $totable = [];
-            foreach ($data as $datum) {
-                if ((int)$datum->over >= $formdata->datefrom && (int)$datum->over <= $formdata->dateto + DAYSECS - 1) {
-                    $totable[] = $datum;
-                }
-            }
-            self::build_and_render_table($totable);
-            redirect(helper::get_report_url());
-        } else {
-            self::make_page_header($action, null);
-            $mform->display();
-        }
-    }*/
 
     /**
      * @throws moodle_exception
