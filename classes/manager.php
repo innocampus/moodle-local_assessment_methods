@@ -39,7 +39,6 @@ use stdClass;
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
 
-//require(__DIR__.'/../../../config.php');
 require_once($CFG->libdir . '/formslib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
@@ -83,7 +82,6 @@ class manager {
             default:
                 require_capability('local/assessment_methods:view_report', $context);
                 self::make_page_header($action);
-                //self::process_search($action);
                 self::show_report();
         }
     }
@@ -129,19 +127,11 @@ class manager {
             case self::ACTION_VIEW_REPORT:
             default:
                 $title = helper::get_string('report');
-                // Test by CG
                 $PAGE->set_title($title);
                 $PAGE->set_url($url);
                 echo $OUTPUT->header();
                 break;
-            /*default:
-                throw new \moodle_exception('unknown_action', 'local_assessment_methods');*/
         }
-
-        // commented out by CG for testing purposes
-        //$PAGE->set_title($title);
-        //$PAGE->set_url($url);
-        //echo $OUTPUT->header();
     }
 
     /**
@@ -164,69 +154,15 @@ class manager {
         echo $OUTPUT->footer();
     }
 
-/*    private static function get_data_from_db(): array {
-        global $DB;
-
-        $common_fields = 'am.id as amid, cm.id as cmid, m.name as modname, am.method as method, am.method as method_id,
-                            c.id as cid, c.shortname as cname, u.id as uid, u.firstname as fname, u.lastname as lname, 
-                            u.alternatename as aname, ';
-        $fields = $common_fields . "CASE m.name
-                                        WHEN 'quiz' THEN q.timeclose
-                                        WHEN 'assign' THEN a.duedate
-                                    END as over,
-                                    CASE m.name
-                                        WHEN 'quiz' THEN q.name
-                                        WHEN 'assign' THEN a.name
-                                    END as name";
-        $from = '{local_assessment_methods} am
-                 JOIN {course_modules} cm ON cm.id = am.cmid
-                 JOIN {course} c ON c.id = cm.course
-                 JOIN {modules} m ON m.id = cm.module
-                 JOIN {user} u ON u.id = am.userid
-                 FULL JOIN {assign} a ON a.id = cm.instance
-                 FULL JOIN {quiz} q ON q.id = cm.instance';
-        $where = "1=1";
-        //TODO fill $data DONE by Christian Gillen
-        $data = $DB->get_records_sql("SELECT ${fields}
-                                            FROM ${from}
-                                            WHERE ${where}");
-        return $data;
-    }*/
-
-/*    private static function build_and_render_table($data) {
-        global $PAGE, $OUTPUT;
-        $renderer = $PAGE->get_renderer('local_assessment_methods');
-        $table = new output\report($data);
-        if (!$table->is_empty()) {
-            // the table filled with data before is rendered
-            echo $renderer->render($table);
-        } else {
-            echo $OUTPUT->notification(helper::get_string('report_table_empty_notice'), 'info');
-        }
-    }*/
-
     private static function show_report() {
         global $PAGE, $OUTPUT;
 
         /** @var output\renderer $renderer */
         $renderer = $PAGE->get_renderer('local_assessment_methods');
 
-        //TODO fill $data DONE by Christian Gillen with helper function right above
-        //self::build_and_render_table(self::get_data_from_db());
-
         $search = optional_param('search', '', PARAM_TEXT);
-        //admin_externalpage_setup('assessment_methods', '', ['search' => $search], '', ['pagelayout' => 'report']);
 
         $mform = new form\search();
-        /*if ($mform->is_cancelled()) {
-            redirect(helper::get_report_url());
-            //self::execute(self::ACTION_VIEW_ADMIN_PAGE);
-            //self::show_report();
-            //redirect(helper::get_admin_setting_url());
-        }*/
-        /*else {
-            redirect(helper::get_admin_setting_url());
-        }*/
 
         echo $OUTPUT->heading(helper::get_string('pluginname'));
 

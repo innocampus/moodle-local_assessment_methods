@@ -40,7 +40,6 @@ use moodle_page;
  * @property-read \stdClass $data
  */
 class report extends \table_sql implements \renderable {
-    //TODO make this work! DONE by Christian Gillen
 
     /** @var array $data */
     private $data;

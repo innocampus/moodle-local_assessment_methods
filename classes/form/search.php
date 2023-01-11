@@ -50,15 +50,6 @@ class search extends \moodleform {
         $mform->addElement('header', 'heading',
             helper::get_string('search'));
 
-        /*$mform->addElement('text', 'assign_quiz_name',
-            helper::get_string('assign_quiz_name'));
-        $mform->setType('assign_quiz_name', PARAM_TEXT);*/
-
-        /*$mform->addElement('text', 'activities',
-            helper::get_string('activities'));
-        $mform->setType('activities', PARAM_TEXT);
-        $mform->addHelpButton('activities', 'activities', 'local_assessment_methods');*/
-
         // select between assignments & quizzes, assignments only or quizzes only, called activities
         $mform->addElement('select', 'activities',
             helper::get_string('activities'),
@@ -76,10 +67,6 @@ class search extends \moodleform {
             helper::get_string('assessment_methods'),
             $methods
         );
-
-        /*$mform->addElement('text', 'method_id',
-            helper::get_string('method_id'));
-        $mform->setType('method_id', PARAM_TEXT);*/
 
         $mform->addElement('date_selector', 'datefrom',
             helper::get_string('datefrom'), ['optional' => true]);
