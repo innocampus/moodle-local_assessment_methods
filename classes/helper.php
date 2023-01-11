@@ -107,6 +107,46 @@ class helper {
     }
 
     /**
+     * @param string $userid
+     * @return moodle_url
+     * @throws moodle_exception
+     */
+    public static function get_user_url(string $userid): moodle_url {
+        return new moodle_url('/user/profile.php?id=' . $userid);
+    }
+
+    /**
+     * @param string $courseid
+     * @return moodle_url
+     * @throws moodle_exception
+     */
+    public static function get_course_url(string $courseid): moodle_url {
+        return new moodle_url('/course/view.php?id=' . $courseid);
+    }
+
+    /**
+     * @param string $cmid
+     * @param string $cmmodule
+     * @return moodle_url
+     * @throws moodle_exception
+     */
+    public static function get_assquiz_url(string $cmid, $module): moodle_url {
+        $url = null;
+        switch ($module) {
+            case 'quiz':
+                $url = new moodle_url('/mod/quiz/view.php?id=' . $cmid);
+                break;
+            case 'assign':
+                $url = new moodle_url('/mod/assign/view.php?id=' . $cmid);
+                break;
+            default:
+                $url = self::get_report_url();
+        }
+        return $url;
+    }
+
+
+    /**
      * @param $identifier
      * @return string
      * @throws moodle_exception

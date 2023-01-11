@@ -28,7 +28,7 @@ use local_assessment_methods\helper;
 
 function xmldb_local_assessment_methods_install() {
     helper::add_or_update_method("home_exam", ["de" => "Digitale Fernprüfung (Klausur)", "en" => "E-Exam at home"]);
-    helper::add_or_update_method("e_exam", ["de" => "Digitale Präsenzprüfung (Klausur)", "en" => "E-Exam at university"]);
+    helper::add_or_update_method("uni_exam", ["de" => "Digitale Präsenzprüfung (Klausur)", "en" => "E-Exam at university"]);
     helper::add_or_update_method("portfolio", ["de" => "Portfolio-Teilleistung", "en" => "Part of portfolio exam"]);
     helper::add_or_update_method("presentation", ["de" => "Referat", "en" => "Presentation"]);
     helper::add_or_update_method("paper", ["de" => "Hausarbeit", "en" => "(Seminar) paper"]);
@@ -37,4 +37,5 @@ function xmldb_local_assessment_methods_install() {
     helper::add_or_update_method("trial", ["de" => "Probeklausur", "en" => "Trial exam"]);
     helper::add_or_update_method("homework", ["de" => "Hausaufgabe", "en" => "Homework"]);
     helper::add_or_update_method("self", ["de" => "Vertiefung/Selbststudium", "en" => "Self-Assignment"]);
+    helper::add_or_update_method("pretest", ["de" => "Vortest (keine Portfolio-Teilleistung)", "en" => "Pretest"]);
 }

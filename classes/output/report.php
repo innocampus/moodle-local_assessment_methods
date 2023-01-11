@@ -24,24 +24,30 @@
 
 namespace local_assessment_methods\output;
 
-use html_table;
-use moodle_page;
-
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->libdir . '/searchlib.php');
+require_once($CFG->libdir . '/tablelib.php');
+
+use html_table;
+use local_assessment_methods\form\search;
+use local_assessment_methods\helper;
+use moodle_page;
+
 /**
- * Class renderer
+ * Class report
  * @package local_assessment_methods\output
  * @property-read \stdClass $data
  */
-class report implements \renderable {
-    //TODO make this work!
+class report extends \table_sql implements \renderable {
 
     /** @var array $data */
     private $data;
 
     function __construct(array $data) {
+        parent::__construct('local-assessment-methods-report');
         $this->data = $data;
+        $this->sortable(true, 'duedate_timeclose', SORT_ASC);
     }
 
     /**
@@ -57,16 +63,52 @@ class report implements \renderable {
         return $table;
     }
 
+    public function is_empty(): bool {
+        return empty($this->data);
+    }
+
     private function create_table_header(): array {
-        return [];
+        return array(
+            helper::get_string('assign_quiz_name'),
+            helper::get_string('assessment_method'),
+            helper::get_string('method_id'),
+            helper::get_string('duedate_timeclose'),
+            helper::get_string('course'),
+            helper::get_string('user')
+        );
     }
 
     private function create_table_row($row_id): ?\html_table_row {
-        return null;
+        $data = $this->data[$row_id];
+        // from unix time stamp to a readable date and time format
+        $date = userdate($data->over);
+
+        // from course module id and course module module to the relative assign or quiz URL
+        $url = helper::get_assquiz_url($data->cmid, $data->modname);
+        $name = \html_writer::link($url, $data->name);
+
+        // from the method code word to the respective translation
+        $method = helper::get_method_options($data->method, null)[$data->method];
+
+        // from course id to the relative course URL
+        $url = helper::get_course_url($data->cid);
+        $course = \html_writer::link($url, $data->cname);
+
+        // from user names to the relative user URL
+        $url = helper::get_user_url($data->uid);
+        $fullname = $data->aname ?: $data->fname . ' ' . $data->lname;
+        $user = \html_writer::link($url, $fullname);
+
+        // make the row
+        $table_row = new \html_table_row([
+            $name, $method, $data->method, $date, $course, $user
+        ]);
+
+        return $table_row;
     }
 
     static function filter_form(): ?\moodleform {
-        return null;
+        return new search();
     }
 
     static function quiz_svg(): string {

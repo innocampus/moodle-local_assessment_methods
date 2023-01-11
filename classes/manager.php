@@ -24,17 +24,24 @@
 
 namespace local_assessment_methods;
 
+use cache;
+use cache_session;
+use cache_store;
 use coding_exception;
 use core\update\checker_exception;
 use dml_exception;
 use moodle_exception;
 use context_system;
 use moodle_url;
+use local_assessment_methods\helper;
+use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
 
 require_once($CFG->libdir . '/formslib.php');
+require_once($CFG->libdir . '/adminlib.php');
+
 
 class manager {
 
@@ -105,21 +112,26 @@ class manager {
                 if ($method) {
                     $url->param('method', $method);
                 }
+                // Test by CG
+                $PAGE->set_title($title);
+                $PAGE->set_url($url);
+                echo $OUTPUT->header();
                 break;
             case self::ACTION_VIEW_ADMIN_PAGE:
                 $title = helper::get_string('assessment_method_list');
+                // Test by CG
+                $PAGE->set_title($title);
+                $PAGE->set_url($url);
+                echo $OUTPUT->header();
                 break;
             case self::ACTION_VIEW_REPORT:
-                $title = helper::get_string('report');
-                break;
             default:
-                throw new \moodle_exception('unknown_action', 'local_assessment_methods');
+                $title = helper::get_string('report');
+                $PAGE->set_title($title);
+                $PAGE->set_url($url);
+                echo $OUTPUT->header();
+                break;
         }
-
-        $PAGE->set_title($title);
-        $PAGE->set_url($url);
-
-        echo $OUTPUT->header();
     }
 
     /**
@@ -148,11 +160,78 @@ class manager {
         /** @var output\renderer $renderer */
         $renderer = $PAGE->get_renderer('local_assessment_methods');
 
-        $data = [];
-        //TODO fill $data
+        $search = optional_param('search', '', PARAM_TEXT);
 
-        $renderer->render(new output\report($data));
-        echo $OUTPUT->footer();
+        $mform = new form\search();
+
+        echo $OUTPUT->heading(helper::get_string('pluginname'));
+
+        /** @var cache_session $cache */
+        $cache = cache::make_from_params(cache_store::MODE_SESSION, 'assessment_methods', 'search');
+
+        if (!empty($search)) {
+            $searchdata = (object) ['setting' => $search];
+        } else {
+            $searchdata = $cache->get('data');
+        }
+
+        $mform->set_data($searchdata);
+
+        $searchclauses = [];
+
+        if ($mform->is_cancelled()) {
+            redirect(helper::get_report_url());
+        }
+
+        $data = ($mform->is_submitted() ? $mform->get_data() : fullclone($searchdata));
+        if ($data instanceof stdClass) {
+            if (!empty($data->assessment_methods)) {
+                $searchclauses[] = "assessment_methods:{$data->assessment_methods}";
+            }
+            if (!empty($data->activities)) {
+                if ($data->activities == "1") {
+                    $searchclauses[] = "assign";
+                } else {
+                    $searchclauses[] = "quiz";
+                }
+            }
+            if (!empty($data->datefrom)) {
+                $searchclauses[] = "datefrom:{$data->datefrom}";
+            }
+            if (!empty($data->dateto)) {
+                $dateto = $data->dateto + DAYSECS - 1;
+                $searchclauses[] = "dateto:{$dateto}";
+            }
+            if (!empty($data->course)) {
+                $searchclauses[] = $data->course;
+            }
+            if (!empty($data->user)) {
+                $searchclauses[] = "user:{$data->user}";
+            }
+            unset($data->submitbutton);
+            $cache->set('data', $data);
+        }
+
+        $mform->display();
+
+        $table = new output\report_table(implode(' ', $searchclauses));
+
+        if (!$table->is_downloading()) {
+            // Only print headers if not asked to download data.
+            // Print the page header.
+            $PAGE->set_title(helper::get_string('pluginname'));
+            $PAGE->set_heading(helper::get_string('pluginname'));
+            $PAGE->navbar->add(helper::get_string('pluginname'), new moodle_url('/index.php'));
+            //echo $OUTPUT->header();
+        }
+
+        $table->define_baseurl($PAGE->url);
+
+        echo $renderer->render($table);
+
+        if (!$table->is_downloading()) {
+            echo $OUTPUT->footer();
+        }
     }
 
     /**
