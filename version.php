@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 /** @var stdClass $plugin - dirty hack for PHPStorm */
 $plugin->component = 'local_assessment_methods';
-$plugin->version   = 2022042201;
+$plugin->version   = 2023061700;
 $plugin->requires  = 2020061500;
 $plugin->cron      = 0;
 $plugin->maturity  = MATURITY_RC;
