@@ -18,3 +18,5 @@ $string['visibility_hidden'] = 'Hidden';
 $string['visibility_all'] = 'Visible';
 $string['report'] = 'Report';
 $string['please_select'] = 'Please select an option...';
+$string['assessment_methods:manage'] = 'Manage examination formats of E-Assessments.';
+$string['assessment_methods:view_report'] = 'Display examination formats report (E-Assessments).';

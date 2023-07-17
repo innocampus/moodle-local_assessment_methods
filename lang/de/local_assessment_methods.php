@@ -18,3 +18,5 @@ $string['visibility_hidden'] = 'Verborgen';
 $string['visibility_all'] = 'Sichtbar';
 $string['report'] = 'Bericht';
 $string['please_select'] = 'Bitte wählen Sie eine Option...';
+$string['assessment_methods:manage'] = 'Prüfungsformate von E-Assessments managen.';
+$string['assessment_methods:view_report'] = 'Prüfungsformate-Bericht (E-Assessments) anzeigen.';
