@@ -75,6 +75,6 @@ class method_form extends \moodleform {
     }
 
     public static function get_translation_element_name(string $lang_code) : string {
-        return "method_translation_${lang_code}";
+        return "method_translation_$lang_code";
     }
 }
