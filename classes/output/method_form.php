@@ -39,7 +39,7 @@ class method_form extends \moodleform {
         $mform = $this->_form;
 
         // General settings
-        $mform->addElement('header', 'generalheader',get_string('general'));
+        $mform->addElement('header', 'generalheader', get_string('general'));
         $mform->setExpanded('generalheader');
 
         /** @var HTML_QuickForm_text $elem */
@@ -66,7 +66,7 @@ class method_form extends \moodleform {
             $name = self::get_translation_element_name($lang_code);
             $mform->addElement('text', $name, $localized_string);
             $mform->setType($name, PARAM_TEXT);
-            if ($lang_code === 'en' or substr($lang_code, 0, 3) === 'en_') {
+            if ($lang_code === 'en' or str_starts_with($lang_code, 'en_')) {
                 $mform->addRule($name, get_string('required'), 'required');
             }
         }
@@ -75,6 +75,6 @@ class method_form extends \moodleform {
     }
 
     public static function get_translation_element_name(string $lang_code) : string {
-        return "method_translation_${lang_code}";
+        return "method_translation_$lang_code";
     }
 }

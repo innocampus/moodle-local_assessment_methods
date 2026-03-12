@@ -27,11 +27,9 @@ namespace local_assessment_methods\output;
 
 defined('MOODLE_INTERNAL') || die();
 
-use core_tag\output\tag;
 use local_assessment_methods\helper;
 use local_assessment_methods\manager;
 use moodle_exception;
-use moodle_page;
 use html_table;
 use html_table_row;
 use html_table_cell;
@@ -43,16 +41,10 @@ use pix_icon;
  * @package local_assessment_methods\output
  */
 class setting_table implements \renderable {
-
-    private $data;
-    private $canedit;
-    private $candelete;
-    private $languages;
-
-    function __construct(array $data, bool $canedit, bool $candelete) {
-        $this->data = $data;
-        $this->canedit = $canedit;
-        $this->candelete = $candelete;
+    private array $languages;
+    function __construct(
+        private readonly array $data, private readonly bool $canedit, private readonly bool $candelete
+    ) {
         /** @var \core_string_manager $lang_man */
         $string_man = get_string_manager();
         $this->languages = $string_man->get_list_of_translations();
@@ -113,7 +105,7 @@ class setting_table implements \renderable {
         }
         if ($this->canedit || $this->candelete) {
             $cell = new html_table_cell();
-            $cell->text = "";
+            $cell->text = '';
             if ($this->canedit) {
                 $icon = new pix_icon('t/edit', get_string('edit'));
                 $cell->text .= html_writer::link(helper::get_method_edit_url($method_id), $OUTPUT->render($icon));

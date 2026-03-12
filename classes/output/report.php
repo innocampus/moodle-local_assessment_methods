@@ -25,7 +25,6 @@
 namespace local_assessment_methods\output;
 
 use html_table;
-use moodle_page;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -37,12 +36,7 @@ defined('MOODLE_INTERNAL') || die();
 class report implements \renderable {
     //TODO make this work!
 
-    /** @var array $data */
-    private $data;
-
-    function __construct(array $data) {
-        $this->data = $data;
-    }
+    function __construct(private readonly array $data) {}
 
     /**
      * @return html_table

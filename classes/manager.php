@@ -25,7 +25,6 @@
 namespace local_assessment_methods;
 
 use coding_exception;
-use core\update\checker_exception;
 use dml_exception;
 use moodle_exception;
 use context_system;
@@ -44,7 +43,7 @@ class manager {
     const ACTION_VIEW_REPORT = 'report';
 
     const VISIBILITY_HIDDEN = 0;
-    const VISIBILITY_ADMINS_ONLY = 1; // TODO do
+    const VISIBILITY_ADMINS_ONLY = 1; // TODO
     const VISIBILITY_ALL = 2;
 
     /**
@@ -172,7 +171,7 @@ class manager {
             $lang_codes = array_keys(get_string_manager()->get_list_of_languages());
             foreach ($lang_codes as $lc) {
                 $name = $form::get_translation_element_name($lc);
-                if (isset($data->$name) && !empty($data->$name)) {
+                if (!empty($data->$name)) {
                     $translations[$lc] = $data->$name;
                 }
             }
