@@ -25,7 +25,6 @@
 namespace local_assessment_methods;
 
 use coding_exception;
-use core\update\checker_exception;
 use dml_exception;
 use moodle_exception;
 use context_system;

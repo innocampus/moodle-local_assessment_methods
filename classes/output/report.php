@@ -25,7 +25,6 @@
 namespace local_assessment_methods\output;
 
 use html_table;
-use moodle_page;
 
 defined('MOODLE_INTERNAL') || die();
 

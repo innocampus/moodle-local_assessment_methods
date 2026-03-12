@@ -27,11 +27,9 @@ namespace local_assessment_methods\output;
 
 defined('MOODLE_INTERNAL') || die();
 
-use core_tag\output\tag;
 use local_assessment_methods\helper;
 use local_assessment_methods\manager;
 use moodle_exception;
-use moodle_page;
 use html_table;
 use html_table_row;
 use html_table_cell;
