@@ -41,7 +41,7 @@ class helper {
 
     const PLUGIN_PATH = '/local/assessment_methods/';
 
-    private static $loadedmethods = null;
+    private static ?array $loadedmethods = null;
 
     /**
      * @return moodle_url

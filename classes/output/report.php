@@ -36,12 +36,7 @@ defined('MOODLE_INTERNAL') || die();
 class report implements \renderable {
     //TODO make this work!
 
-    /** @var array $data */
-    private $data;
-
-    function __construct(array $data) {
-        $this->data = $data;
-    }
+    function __construct(private readonly array $data) {}
 
     /**
      * @return html_table

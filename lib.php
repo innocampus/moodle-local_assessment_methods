@@ -11,7 +11,6 @@ defined('MOODLE_INTERNAL') || die;
  * @throws dml_exception
  */
 function local_assessment_methods_coursemodule_standard_elements($formwrapper, $mform)  {
-    global $DB;
     $wrapper = $formwrapper->get_current();
     if (!in_array($wrapper->modulename, ["quiz", "assign"])) {
         return;
