@@ -24,7 +24,6 @@
 
 namespace local_assessment_methods;
 
-use local_assessment_methods\error\write_empty_settings_error;
 use moodle_exception;
 use moodle_url;
 
